@@ -17,7 +17,9 @@ public class ContactUtils {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 String name = jsonObject.getString("name");
                 String phone = jsonObject.getString("phone");
-                contacts.add(new Contact(name, phone));
+                String email = jsonObject.getString("email");
+                String group = jsonObject.getString("group");
+                contacts.add(new Contact(name, phone, email, group));
             }
         } catch (JSONException e) {
             e.printStackTrace();

@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,9 +20,15 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
 
     private List<String> imageList;
     private Context context;
+    private boolean isThreeColumnLayout;
 
-    public ImageAdapter(List<String> imageList) {
+    public ImageAdapter(List<String> imageList, boolean isThreeColumnLayout) {
         this.imageList = imageList;
+        this.isThreeColumnLayout = isThreeColumnLayout;
+    }
+
+    public void setThreeColumnLayout(boolean isThreeColumnLayout) {
+        this.isThreeColumnLayout = isThreeColumnLayout;
     }
 
     @NonNull
@@ -39,6 +46,13 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
                 .load(imagePath)
                 .centerCrop()
                 .into(holder.imageView);
+
+        // Set the height of the FrameLayout dynamically
+        ViewGroup.LayoutParams layoutParams = holder.frameLayout.getLayoutParams();
+        int height = isThreeColumnLayout ? 150 : 112; // 150dp for 3 columns, 112dp for 4 columns
+        layoutParams.height = (int) (context.getResources().getDisplayMetrics().density * height);
+        holder.frameLayout.setLayoutParams(layoutParams);
+
         holder.imageView.setOnClickListener(v -> {
             Intent intent = new Intent(context, ImageActivity.class);
             intent.putStringArrayListExtra("image_list", new ArrayList<>(imageList));
@@ -54,10 +68,12 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
+        FrameLayout frameLayout;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.image_view);
+            frameLayout = itemView.findViewById(R.id.frame_layout);
         }
     }
 }

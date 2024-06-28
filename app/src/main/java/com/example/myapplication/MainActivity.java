@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
                         tab.setText("GALLERY");
                         break;
                     case 2:
-                        tab.setText("BLANK");
+                        tab.setText("CALENDAR");
                         break;
                 }
             }
@@ -81,8 +81,8 @@ public class MainActivity extends AppCompatActivity {
     private static class ViewPagerAdapter extends FragmentStateAdapter {
         private final Fragment[] fragments = new Fragment[]{
                 new ContactFragment(),
-                new GalleryFragment(), // SecondFragment를 GalleryFragment로 대체
-                new BlankFragment()
+                new GalleryFragment(),
+                new BlankFragment() // 세 번째 탭에 BlankFragment 사용
         };
 
         public ViewPagerAdapter(FragmentActivity fa) {

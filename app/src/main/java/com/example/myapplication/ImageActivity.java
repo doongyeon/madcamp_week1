@@ -1,21 +1,18 @@
 package com.example.myapplication;
 
-import android.content.Context;
-import android.database.Cursor;
 import android.location.Address;
 import android.location.Geocoder;
 import android.media.ExifInterface;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
@@ -27,7 +24,6 @@ public class ImageActivity extends AppCompatActivity {
     private ImagePagerAdapter imagePagerAdapter;
     private List<String> imageList;
     private int initialPosition;
-    private TextView textImageInfo;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -35,7 +31,6 @@ public class ImageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_image);
 
         viewPager = findViewById(R.id.view_pager);
-        textImageInfo = findViewById(R.id.text_image_info);
 
         imageList = getIntent().getStringArrayListExtra("image_list");
         initialPosition = getIntent().getIntExtra("initial_position", 0);
@@ -63,29 +58,47 @@ public class ImageActivity extends AppCompatActivity {
 
     private void displayImageInfo(int position) {
         String imagePath = imageList.get(position);
-        try {
-            ExifInterface exif = new ExifInterface(imagePath);
 
-            String dateTime = exif.getAttribute(ExifInterface.TAG_DATETIME);
-            float[] latLong = new float[2];
-            boolean hasLatLong = exif.getLatLong(latLong);
-            String location = "Unknown";
+        new Thread(() -> {
+            try {
+                ExifInterface exif = new ExifInterface(imagePath);
 
-            if (hasLatLong) {
-                double latitude = latLong[0];
-                double longitude = latLong[1];
-                location = getLocation(latitude, longitude);
+                String dateTime = exif.getAttribute(ExifInterface.TAG_DATETIME);
+                float[] latLong = new float[2];
+                boolean hasLatLong = exif.getLatLong(latLong);
+                String location = "Unknown";
+
+                if (hasLatLong) {
+                    double latitude = latLong[0];
+                    double longitude = latLong[1];
+                    location = getLocation(latitude, longitude);
+                    Log.d(TAG, "Latitude: " + latitude + ", Longitude: " + longitude + ", Location: " + location);
+                } else {
+                    Log.d(TAG, "No location data available for image: " + imagePath);
+                }
+
+                String imageInfo = "Date & Time: " + (dateTime != null ? dateTime : "Unknown") + "\n"
+                        + "Location: " + location;
+
+                runOnUiThread(() -> {
+                    RecyclerView.ViewHolder viewHolder = ((RecyclerView) viewPager.getChildAt(0))
+                            .findViewHolderForAdapterPosition(position);
+                    if (viewHolder != null && viewHolder.itemView.findViewById(R.id.text_image_info) != null) {
+                        ((TextView) viewHolder.itemView.findViewById(R.id.text_image_info)).setText(imageInfo);
+                    }
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e(TAG, "Error reading Exif data", e);
+                runOnUiThread(() -> {
+                    RecyclerView.ViewHolder viewHolder = ((RecyclerView) viewPager.getChildAt(0))
+                            .findViewHolderForAdapterPosition(position);
+                    if (viewHolder != null && viewHolder.itemView.findViewById(R.id.text_image_info) != null) {
+                        ((TextView) viewHolder.itemView.findViewById(R.id.text_image_info)).setText("Unable to retrieve image info.");
+                    }
+                });
             }
-
-            String imageInfo = "Date & Time: " + (dateTime != null ? dateTime : "Unknown") + "\n"
-                    + "Location: " + location;
-
-            textImageInfo.setText(imageInfo);
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.e(TAG, "Error reading Exif data", e);
-            textImageInfo.setText("Unable to retrieve image info.");
-        }
+        }).start();
     }
 
     private String getLocation(double latitude, double longitude) {

@@ -8,4 +8,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="fitCenter" />
+
+    <TextView
+        android:id="@+id/text_image_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="Image Info"
+        android:textSize="14sp"
+        android:textColor="@android:color/white"
+        android:background="#80000000"
+        android:visibility="gone"
+        android:layout_gravity="bottom"/>
 </FrameLayout>

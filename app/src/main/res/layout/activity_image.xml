@@ -17,5 +17,6 @@
         android:padding="16dp"
         android:text="Image Info"
         android:textSize="14sp"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/black"
+        android:visibility="gone" />
 </LinearLayout>

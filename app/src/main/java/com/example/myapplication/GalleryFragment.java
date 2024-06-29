@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -38,11 +40,18 @@ public class GalleryFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
 
-        Button toggleLayoutButton = view.findViewById(R.id.toggle_layout_button);
+        ImageButton toggleLayoutButton = view.findViewById(R.id.toggle_layout_button);
         toggleLayoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toggleLayout();
+                if (isThreeColumnLayout) {
+                    recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 4));
+                    toggleLayoutButton.setImageResource(R.drawable.ic_3x3);
+                } else {
+                    recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
+                    toggleLayoutButton.setImageResource(R.drawable.ic_4x4);
+                }
+                isThreeColumnLayout= !isThreeColumnLayout;
             }
         });
 

@@ -5,12 +5,13 @@ import android.location.Geocoder;
 import android.media.ExifInterface;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import java.io.IOException;
@@ -24,13 +25,25 @@ public class ImageActivity extends AppCompatActivity {
     private ImagePagerAdapter imagePagerAdapter;
     private List<String> imageList;
     private int initialPosition;
+    private TextView dateInfoTextView;
+    private TextView locationInfoTextView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image);
 
+        ImageButton backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish(); // 현재 액티비티 종료
+            }
+        });
+
         viewPager = findViewById(R.id.view_pager);
+        dateInfoTextView = findViewById(R.id.dateInfo);
+        locationInfoTextView = findViewById(R.id.locationInfo);
 
         imageList = getIntent().getStringArrayListExtra("image_list");
         initialPosition = getIntent().getIntExtra("initial_position", 0);
@@ -39,12 +52,9 @@ public class ImageActivity extends AppCompatActivity {
         viewPager.setAdapter(imagePagerAdapter);
 
         // Set the current item after setting the adapter
-        viewPager.post(new Runnable() {
-            @Override
-            public void run() {
-                viewPager.setCurrentItem(initialPosition, false);
-                displayImageInfo(initialPosition);
-            }
+        viewPager.post(() -> {
+            viewPager.setCurrentItem(initialPosition, false);
+            displayImageInfo(initialPosition);
         });
 
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
@@ -59,6 +69,8 @@ public class ImageActivity extends AppCompatActivity {
     private void displayImageInfo(int position) {
         String imagePath = imageList.get(position);
 
+        String[] location = { "-" };
+
         new Thread(() -> {
             try {
                 ExifInterface exif = new ExifInterface(imagePath);
@@ -66,36 +78,29 @@ public class ImageActivity extends AppCompatActivity {
                 String dateTime = exif.getAttribute(ExifInterface.TAG_DATETIME);
                 float[] latLong = new float[2];
                 boolean hasLatLong = exif.getLatLong(latLong);
-                String location = "Unknown";
 
                 if (hasLatLong) {
                     double latitude = latLong[0];
                     double longitude = latLong[1];
-                    location = getLocation(latitude, longitude);
+                    location[0] = getLocation(latitude, longitude);
                     Log.d(TAG, "Latitude: " + latitude + ", Longitude: " + longitude + ", Location: " + location);
                 } else {
                     Log.d(TAG, "No location data available for image: " + imagePath);
                 }
 
-                String imageInfo = "Date & Time: " + (dateTime != null ? dateTime : "Unknown") + "\n"
-                        + "Location: " + location;
+                String imageInfo = "Date & Time: " + (dateTime != null ? dateTime : "-") + "\n"
+                        + "Location: " + location[0];
 
                 runOnUiThread(() -> {
-                    RecyclerView.ViewHolder viewHolder = ((RecyclerView) viewPager.getChildAt(0))
-                            .findViewHolderForAdapterPosition(position);
-                    if (viewHolder != null && viewHolder.itemView.findViewById(R.id.text_image_info) != null) {
-                        ((TextView) viewHolder.itemView.findViewById(R.id.text_image_info)).setText(imageInfo);
-                    }
+                    dateInfoTextView.setText(dateTime != null ? dateTime : "-");
+                    locationInfoTextView.setText(location[0] != null ? location[0] : "-");
                 });
             } catch (IOException e) {
                 e.printStackTrace();
                 Log.e(TAG, "Error reading Exif data", e);
                 runOnUiThread(() -> {
-                    RecyclerView.ViewHolder viewHolder = ((RecyclerView) viewPager.getChildAt(0))
-                            .findViewHolderForAdapterPosition(position);
-                    if (viewHolder != null && viewHolder.itemView.findViewById(R.id.text_image_info) != null) {
-                        ((TextView) viewHolder.itemView.findViewById(R.id.text_image_info)).setText("Unable to retrieve image info.");
-                    }
+                    dateInfoTextView.setText("Unable to retrieve image info.");
+                    locationInfoTextView.setText("Unable to retrieve image info.");
                 });
             }
         }).start();
@@ -115,3 +120,4 @@ public class ImageActivity extends AppCompatActivity {
         return "Unknown";
     }
 }
+

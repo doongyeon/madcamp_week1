@@ -4,11 +4,15 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <Button
+    <ImageButton
         android:id="@+id/toggle_layout_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Toggle Layout" />
+        android:src="@drawable/ic_4x4"
+        android:background="@null"
+        android:minHeight="0dp"
+        android:minWidth="0dp"
+        android:layout_margin="16dp"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"

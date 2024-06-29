@@ -3,12 +3,13 @@ package com.example.myapplication;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.github.chrisbanes.photoview.PhotoView;
 
 import java.util.List;
 
@@ -33,7 +34,15 @@ public class ImagePagerAdapter extends RecyclerView.Adapter<ImagePagerAdapter.Vi
         Glide.with(holder.itemView.getContext())
                 .load(imagePath)
                 .fitCenter()
-                .into(holder.imageView);
+                .into(holder.photoView);
+
+        holder.photoView.setOnClickListener(v -> {
+            if (holder.textImageInfo.getVisibility() == View.VISIBLE) {
+                holder.textImageInfo.setVisibility(View.GONE);
+            } else {
+                holder.textImageInfo.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     @Override
@@ -42,11 +51,13 @@ public class ImagePagerAdapter extends RecyclerView.Adapter<ImagePagerAdapter.Vi
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView imageView;
+        PhotoView photoView;
+        TextView textImageInfo;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.full_image_view);
+            photoView = itemView.findViewById(R.id.full_image_view);
+            textImageInfo = itemView.findViewById(R.id.text_image_info);
         }
     }
 }

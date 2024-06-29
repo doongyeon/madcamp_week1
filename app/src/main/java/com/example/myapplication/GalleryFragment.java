@@ -10,6 +10,7 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -27,6 +28,7 @@ public class GalleryFragment extends Fragment {
     private RecyclerView recyclerView;
     private ImageAdapter imageAdapter;
     private List<String> imageList;
+    private boolean isThreeColumnLayout = true;
 
     @Nullable
     @Override
@@ -36,10 +38,18 @@ public class GalleryFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
 
+        Button toggleLayoutButton = view.findViewById(R.id.toggle_layout_button);
+        toggleLayoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleLayout();
+            }
+        });
+
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_MEDIA_IMAGES)
                 == PackageManager.PERMISSION_GRANTED) {
             imageList = getImagesPath();
-            imageAdapter = new ImageAdapter(imageList);
+            imageAdapter = new ImageAdapter(imageList, isThreeColumnLayout);
             recyclerView.setAdapter(imageAdapter);
         } else {
             Toast.makeText(getContext(), "Storage permission is required to display images.", Toast.LENGTH_SHORT).show();
@@ -47,6 +57,17 @@ public class GalleryFragment extends Fragment {
         }
 
         return view;
+    }
+
+    private void toggleLayout() {
+        if (isThreeColumnLayout) {
+            recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 4));
+        } else {
+            recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        }
+        isThreeColumnLayout = !isThreeColumnLayout;
+        imageAdapter.setThreeColumnLayout(isThreeColumnLayout);
+        imageAdapter.notifyDataSetChanged();
     }
 
     private List<String> getImagesPath() {

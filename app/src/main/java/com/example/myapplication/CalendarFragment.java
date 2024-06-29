@@ -121,7 +121,7 @@ public class CalendarFragment extends Fragment implements AddEventDialogFragment
 
     private void selectTodayDate() {
         LocalDate today = LocalDate.now();
-        CalendarDay calendarDay = CalendarDay.from(today.getYear(), today.getMonthValue() - 1, today.getDayOfMonth());
+        CalendarDay calendarDay = CalendarDay.from(today.getYear(), today.getMonthValue(), today.getDayOfMonth());
         calendarView.setDateSelected(calendarDay, true);
         selectedDate = today;
         displayEventsForDate(today);

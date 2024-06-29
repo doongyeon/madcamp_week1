@@ -43,6 +43,11 @@ public class EventAdapter extends ArrayAdapter<Event> {
         eventTitleTextView.setText(event.getTitle());
         eventContentsTextView.setText(event.getContents());
 
+        if (event.getType().equals("public")) {
+            convertView.setBackgroundResource(R.drawable.public_box);
+        } else if (event.getType().equals("private")) {
+            convertView.setBackgroundResource(R.drawable.contact_box);
+        }
         return convertView;
     }
 }

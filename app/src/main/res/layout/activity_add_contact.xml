@@ -5,49 +5,82 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <Button
+    <ImageButton
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
         android:id="@+id/backButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Back" />
+        android:src="@drawable/arrow_back_ios_24px"
+        android:background="@null"
+        android:layout_margin="16dp" />
 
-    <EditText
-        android:id="@+id/nameEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/backButton"
-        android:hint="이름" />
-
-    <EditText
-        android:id="@+id/phoneEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="전화번호"
-        android:layout_below="@id/nameEditText"
-        android:layout_marginTop="8dp" />
-
-    <EditText
-        android:id="@+id/emailEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="이메일"
-        android:layout_below="@id/phoneEditText"
-        android:layout_marginTop="8dp" />
-
-    <EditText
-        android:id="@+id/groupEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="분반"
-        android:layout_below="@id/emailEditText"
-        android:layout_marginTop="8dp" />
-
-    <Button
-        android:id="@+id/saveButton"
+    <TextView
+        android:id="@+id/addText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Save"
-        android:layout_below="@id/groupEditText"
+        android:layout_below="@id/backButton"
+        android:text="연락처 추가하기"
+        android:textSize="28sp"
+        android:padding="6dp"
+        android:fontFamily="@font/pretendard_extrabold" />
+
+    <LinearLayout
+        android:id="@+id/formLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/contact_box"
+        android:layout_below="@id/addText"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_marginTop="12dp">
+        <EditText
+            android:id="@+id/nameEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/backButton"
+            android:fontFamily="@font/pretendard_regular"
+            android:hint="이름" />
+
+        <EditText
+            android:id="@+id/phoneEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="전화번호"
+            android:layout_below="@id/nameEditText"
+            android:fontFamily="@font/pretendard_regular"
+            android:layout_marginTop="8dp" />
+
+        <EditText
+            android:id="@+id/emailEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="이메일"
+            android:fontFamily="@font/pretendard_regular"
+            android:layout_below="@id/phoneEditText"
+            android:layout_marginTop="8dp" />
+
+        <EditText
+            android:id="@+id/groupEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="분반"
+            android:layout_below="@id/emailEditText"
+            android:fontFamily="@font/pretendard_regular"
+            android:layout_marginTop="8dp" />
+    </LinearLayout>
+
+
+    <android.widget.Button
+        android:id="@+id/saveButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="저장"
+        android:fontFamily="@font/pretendard_semibold"
+        android:background="@drawable/add_contact_button"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:layout_below="@id/formLayout"
         android:layout_marginTop="16dp"
         android:layout_centerHorizontal="true" />
 </RelativeLayout>

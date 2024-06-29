@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.AdapterView;
@@ -40,7 +41,7 @@ public class ContactFragment extends Fragment {
 
         ListView listView = view.findViewById(R.id.listView);
         SearchView searchView = view.findViewById(R.id.searchView);
-        Button addButton = view.findViewById(R.id.addButton);
+        ImageButton addButton = view.findViewById(R.id.addButton);
 
         String jsonContacts = loadJSONFromResource(R.raw.contacts);
         originalContacts = ContactUtils.parseContacts(jsonContacts);

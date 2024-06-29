@@ -1,25 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <com.prolificinteractive.materialcalendarview.MaterialCalendarView
         android:id="@+id/calendarView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"/>
+
+    <ListView
+        android:id="@+id/eventListView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible"
+        android:layout_below="@id/calendarView"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="12dp"
+        android:layout_margin="12dp" />
 
     <TextView
-        android:id="@+id/eventDetailsTextView"
+        android:id="@+id/noEventTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/calendarView"
+        android:textSize="18sp"
+        android:text="해당 날짜에 이벤트가 없습니다"
+        android:textColor="@color/grey"
+        android:fontFamily="@font/pretendard_bold"
         android:padding="16dp"
-        android:textSize="14sp"
-        android:text="Select a date to see events." />
+        android:gravity="center"
+        android:visibility="invisible" />
 
-    <Button
+    <ImageButton
         android:id="@+id/buttonAddEvent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add Event" />
-</LinearLayout>
+        android:src="@drawable/add_24px"
+        android:layout_margin="32dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:clickable="true"
+        android:background="@drawable/add_button"
+        android:scaleType="centerInside"
+        app:tint="#FFFFFF" />
+</RelativeLayout>

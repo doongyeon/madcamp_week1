@@ -1,25 +1,26 @@
-package com.example.myapplication.model;
+package com.example.myapplication;
 
-public class Event {
+import java.io.Serializable;
+
+public class Event implements Serializable {
     private String title;
     private String contents;
     private String writer;
     private String location;
-    private String time;
     private String date;
+    private String time;
     private String type;
 
-    public Event(String title, String contents, String writer, String location, String time, String date, String type) {
+    public Event(String title, String contents, String writer, String location, String date, String time, String type) {
         this.title = title;
         this.contents = contents;
         this.writer = writer;
         this.location = location;
-        this.time = time;
         this.date = date;
+        this.time = time;
         this.type = type;
     }
 
-    // Getter methods
     public String getTitle() {
         return title;
     }
@@ -36,15 +37,17 @@ public class Event {
         return location;
     }
 
-    public String getTime() {
-        return time;
-    }
-
     public String getDate() {
         return date;
+    }
+
+    public String getTime() {
+        return time;
     }
 
     public String getType() {
         return type;
     }
+
 }
+

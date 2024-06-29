@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:src="@drawable/arrow_back_ios_24px"
         android:layout_margin="16dp"
-        android:contentDescription="@string/back_button_description"/>
+        android:background="@null" />
 
     <TextView
         android:id="@+id/titleText"
@@ -18,7 +18,6 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="24dp"
         android:layout_marginTop="24dp"
-        android:text="제목"
         android:textSize="36dp"
         android:fontFamily="@font/pretendard_extrabold"/>
 
@@ -27,30 +26,126 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="24dp"
-        android:text="내용"
-        android:textSize="24dp"
+        android:textSize="21dp"
         android:fontFamily="@font/pretendard_regular"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="24dp"
+        android:layout_marginHorizontal="24dp"
         android:orientation="horizontal"
-        android:background="@drawable/contact_box">
+        android:background="@drawable/contact_box"
+        android:padding="16dp"
+        android:layout_marginBottom="12dp">
 
-        <ImageButton
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="start"
-            android:src="@drawable/alarm_24px"
-            android:contentDescription="@string/alarm_button_description"/>
+            android:gravity="start">
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/person_24px"
+                android:background="@null"
+                android:layout_marginRight="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="작성자"
+                android:fontFamily="@font/pretendard_bold"
+                android:textSize="18dp" />
+        </LinearLayout>
 
         <TextView
+            android:id="@+id/writerText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="128"
+            android:gravity="end"
+            android:fontFamily="@font/pretendard_regular"
+            android:textSize="18dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:orientation="horizontal"
+        android:background="@drawable/contact_box"
+        android:padding="16dp"
+        android:layout_marginBottom="12dp">
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="start">
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/alarm_24px"
+                android:background="@null"
+                android:layout_marginRight="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="만남 시간"
+                android:fontFamily="@font/pretendard_bold"
+                android:textSize="18dp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/timeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="128"
             android:gravity="end"
-            android:text="만남 일시"/>
+            android:fontFamily="@font/pretendard_regular"
+            android:textSize="18dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:orientation="horizontal"
+        android:background="@drawable/contact_box"
+        android:padding="16dp"
+        android:layout_marginBottom="12dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="start">
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/location_on_24px"
+                android:background="@null"
+                android:layout_marginRight="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="만남 장소"
+                android:fontFamily="@font/pretendard_bold"
+                android:textSize="18dp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/locateText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="128"
+            android:gravity="end"
+            android:fontFamily="@font/pretendard_regular"
+            android:textSize="18dp" />
     </LinearLayout>
 </LinearLayout>

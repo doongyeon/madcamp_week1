@@ -11,8 +11,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-
-import com.example.myapplication.model.Event;
+import com.example.myapplication.Event;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 public class AddEventDialogFragment extends DialogFragment {
@@ -49,24 +48,30 @@ public class AddEventDialogFragment extends DialogFragment {
 
         EditText titleEditText = view.findViewById(R.id.editTextTitle);
         EditText contentsEditText = view.findViewById(R.id.editTextContents);
+        EditText writerEditText = view.findViewById(R.id.editTextWriter);
+        EditText locationEditText = view.findViewById(R.id.editTextLocation);
+        EditText timeEditText = view.findViewById(R.id.editTextTime);
 
         builder.setView(view)
-                .setTitle("Add Event")
-                .setPositiveButton("Add", (dialog, which) -> {
+                .setTitle("이벤트 추가하기")
+                .setPositiveButton("추가", (dialog, which) -> {
                     String title = titleEditText.getText().toString();
                     String contents = contentsEditText.getText().toString();
+                    String writer = writerEditText.getText().toString();
+                    String location = locationEditText.getText().toString();
+                    String time = locationEditText.getText().toString();
 
                     if (TextUtils.isEmpty(title) || TextUtils.isEmpty(contents)) {
                         Toast.makeText(getActivity(), "All fields are required", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
-                    Event event = new Event(title, contents, "", "", "", selectedDate, "private");
+                    Event event = new Event(title, contents, writer, location, selectedDate, time, "private");
                     if (listener != null) {
                         listener.onEventAdded(event);
                     }
                 })
-                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+                .setNegativeButton("취소", (dialog, which) -> dialog.dismiss());
 
         return builder.create();
     }

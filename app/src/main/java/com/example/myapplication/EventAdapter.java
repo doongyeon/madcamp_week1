@@ -1,47 +1,48 @@
 package com.example.myapplication;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.annotation.Nullable;
+
+import com.example.myapplication.R;
+import com.example.myapplication.Event;
 
 import java.util.List;
 
-public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> {
+public class EventAdapter extends ArrayAdapter<Event> {
 
-    private List<String> eventList;
+    private Context context;
+    private List<Event> events;
 
-    public EventAdapter(List<String> eventList) {
-        this.eventList = eventList;
+    public EventAdapter(Context context, List<Event> events) {
+        super(context, 0, events);
+        this.context = context;
+        this.events = events;
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(android.R.layout.simple_list_item_1, parent, false);
-        return new ViewHolder(view);
-    }
+    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
-    @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        String event = eventList.get(position);
-        holder.eventTextView.setText(event);
-    }
+        Event event = getItem(position);
 
-    @Override
-    public int getItemCount() {
-        return eventList.size();
-    }
-
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView eventTextView;
-
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            eventTextView = itemView.findViewById(android.R.id.text1);
+        if (convertView == null) {
+            convertView = LayoutInflater.from(context).inflate(R.layout.event_item, parent, false);
         }
+
+        TextView eventTitleTextView = convertView.findViewById(R.id.eventTitleTextView);
+        TextView eventContentsTextView = convertView.findViewById(R.id.eventContentsTextView);
+
+        eventTitleTextView.setText(event.getTitle());
+        eventContentsTextView.setText(event.getContents());
+
+        return convertView;
     }
 }

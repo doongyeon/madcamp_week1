@@ -16,4 +16,10 @@
         android:padding="16dp"
         android:textSize="14sp"
         android:text="Select a date to see events." />
+
+    <Button
+        android:id="@+id/buttonAddEvent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Event" />
 </LinearLayout>

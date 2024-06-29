@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,21 +21,23 @@ import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.format.DateTimeFormatter;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CalendarFragment extends Fragment {
+public class CalendarFragment extends Fragment implements AddEventDialogFragment.AddEventDialogListener {
 
     private MaterialCalendarView calendarView;
     private TextView eventDetailsTextView;
     private List<Event> events;
     private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private LocalDate selectedDate;
 
     @Nullable
     @Override
@@ -42,13 +45,24 @@ public class CalendarFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_calendar, container, false);
         calendarView = view.findViewById(R.id.calendarView);
         eventDetailsTextView = view.findViewById(R.id.eventDetailsTextView);
+        Button addButton = view.findViewById(R.id.buttonAddEvent);
 
         loadEvents();
 
         calendarView.setOnDateChangedListener(new OnDateSelectedListener() {
             @Override
             public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected) {
-                displayEventsForDate(date);
+                selectedDate = LocalDate.of(date.getYear(), date.getMonth(), date.getDay());
+                displayEventsForDate(selectedDate);
+            }
+        });
+
+        addButton.setOnClickListener(v -> {
+            if (selectedDate != null) {
+                String date = selectedDate.toString();
+                AddEventDialogFragment dialog = AddEventDialogFragment.newInstance(date);
+                dialog.setAddEventDialogListener(CalendarFragment.this);
+                dialog.show(getFragmentManager(), "AddEventDialog");
             }
         });
 
@@ -65,18 +79,24 @@ public class CalendarFragment extends Fragment {
             Type eventType = new TypeToken<ArrayList<Event>>() {}.getType();
             events = new Gson().fromJson(reader, eventType);
             reader.close();
+
+            // 로그 추가
+            for (Event event : events) {
+                Log.d("CalendarFragment", "Loaded event: " + event.getTitle() + " on " + event.getDate());
+            }
         } catch (Exception e) {
             Log.e("CalendarFragment", "Error reading events.json", e);
             events = new ArrayList<>();
         }
     }
 
-    private void displayEventsForDate(CalendarDay date) {
+    private void displayEventsForDate(LocalDate date) {
         StringBuilder eventDetails = new StringBuilder();
-        LocalDate selectedDate = LocalDate.of(date.getYear(), date.getMonth(), date.getDay());
+        Log.d("CalendarFragment", "Selected date: " + date.toString()); // 선택된 날짜 로그 추가
         for (Event event : events) {
             LocalDate eventDate = LocalDate.parse(event.getDate(), dateFormatter);
-            if (eventDate.equals(selectedDate)) {
+            Log.d("CalendarFragment", "Comparing with event date: " + eventDate.toString()); // 이벤트 날짜 로그 추가
+            if (eventDate.equals(date)) {
                 eventDetails.append("Title: ").append(event.getTitle()).append("\n")
                         .append("Contents: ").append(event.getContents()).append("\n\n");
             }
@@ -100,9 +120,18 @@ public class CalendarFragment extends Fragment {
     }
 
     private void selectTodayDate() {
-        CalendarDay today = CalendarDay.today();
-        calendarView.setDateSelected(today, true);
+        LocalDate today = LocalDate.now();
+        CalendarDay calendarDay = CalendarDay.from(today.getYear(), today.getMonthValue() - 1, today.getDayOfMonth());
+        calendarView.setDateSelected(calendarDay, true);
+        selectedDate = today;
         displayEventsForDate(today);
-        calendarView.addDecorator(new TodayDecorator(today));
+        calendarView.addDecorator(new TodayDecorator(calendarDay));
+    }
+
+    @Override
+    public void onEventAdded(Event event) {
+        events.add(event);
+        addEventDecorators();
+        displayEventsForDate(LocalDate.parse(event.getDate(), dateFormatter));
     }
 }

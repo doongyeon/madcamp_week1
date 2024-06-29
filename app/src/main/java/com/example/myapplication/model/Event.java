@@ -9,60 +9,42 @@ public class Event {
     private String date;
     private String type;
 
-    // Getters and setters
-    public String getTitle() {
-        return title;
+    public Event(String title, String contents, String writer, String location, String time, String date, String type) {
+        this.title = title;
+        this.contents = contents;
+        this.writer = writer;
+        this.location = location;
+        this.time = time;
+        this.date = date;
+        this.type = type;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    // Getter methods
+    public String getTitle() {
+        return title;
     }
 
     public String getContents() {
         return contents;
     }
 
-    public void setContents(String contents) {
-        this.contents = contents;
-    }
-
     public String getWriter() {
         return writer;
-    }
-
-    public void setWriter(String writer) {
-        this.writer = writer;
     }
 
     public String getLocation() {
         return location;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
     public String getTime() {
         return time;
-    }
-
-    public void setTime(String time) {
-        this.time = time;
     }
 
     public String getDate() {
         return date;
     }
 
-    public void setDate(String date) {
-        this.date = date;
-    }
-
     public String getType() {
         return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 }

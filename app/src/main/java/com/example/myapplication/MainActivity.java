@@ -51,13 +51,16 @@ public class MainActivity extends AppCompatActivity {
             public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
                 switch (position) {
                     case 0:
+                        tab.setIcon(R.drawable.ic_contact);
                         tab.setText("CONTACT");
                         break;
                     case 1:
+                        tab.setIcon(R.drawable.ic_gallery);
                         tab.setText("GALLERY");
                         break;
                     case 2:
-                        tab.setText("BLANK");
+                        tab.setIcon(R.drawable.ic_calendar);
+                        tab.setText("CALENDAR");
                         break;
                 }
             }
@@ -82,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
         private final Fragment[] fragments = new Fragment[]{
                 new ContactFragment(),
                 new GalleryFragment(), // SecondFragment를 GalleryFragment로 대체
-                new BlankFragment()
+                new CalendarFragment()
         };
 
         public ViewPagerAdapter(FragmentActivity fa) {

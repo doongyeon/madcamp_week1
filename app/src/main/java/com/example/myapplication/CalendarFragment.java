@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.myapplication.decorators.EventDecorator;
 import com.example.myapplication.decorators.TodayDecorator;
+import com.example.myapplication.decorators.MultipleDotDecorator;
 import com.example.myapplication.Event;
 import android.widget.LinearLayout;
 import com.google.gson.Gson;
@@ -32,6 +33,7 @@ import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class CalendarFragment extends Fragment implements AddEventDialogFragment.AddEventDialogListener {
@@ -142,15 +144,28 @@ public class CalendarFragment extends Fragment implements AddEventDialogFragment
     }
 
     private void addEventDecorators() {
+        calendarView.removeDecorators();  // 기존 데코레이터 제거
+
+        HashMap<CalendarDay, Integer> datesWithDots = new HashMap<>();
+
         for (Event event : events) {
             try {
                 LocalDate eventDate = LocalDate.parse(event.getDate(), dateFormatter);
                 CalendarDay calendarDay = CalendarDay.from(eventDate.getYear(), eventDate.getMonthValue(), eventDate.getDayOfMonth());
-                calendarView.addDecorator(new EventDecorator(calendarDay));
+
+                // 이벤트 수에 따라 dots 정보 추가
+                datesWithDots.put(calendarDay, datesWithDots.getOrDefault(calendarDay, 0) + 1);
             } catch (Exception e) {
                 Log.e("CalendarFragment", "Error adding event decorator", e);
             }
         }
+
+        calendarView.addDecorator(new MultipleDotDecorator(datesWithDots));
+
+        // 오늘 날짜 강조
+        LocalDate today = LocalDate.now();
+        CalendarDay todayCalendarDay = CalendarDay.from(today.getYear(), today.getMonthValue(), today.getDayOfMonth());
+        calendarView.addDecorator(new TodayDecorator(todayCalendarDay));
     }
 
     private void selectTodayDate() {

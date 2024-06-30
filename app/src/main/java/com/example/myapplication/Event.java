@@ -10,8 +10,9 @@ public class Event implements Serializable {
     private String date;
     private String time;
     private String type;
+    private Boolean isFavorite;
 
-    public Event(String title, String contents, String writer, String location, String date, String time, String type) {
+    public Event(String title, String contents, String writer, String location, String date, String time, String type, Boolean isFavorite) {
         this.title = title;
         this.contents = contents;
         this.writer = writer;
@@ -19,6 +20,7 @@ public class Event implements Serializable {
         this.date = date;
         this.time = time;
         this.type = type;
+        this.isFavorite = isFavorite;
     }
 
     public String getTitle() {
@@ -49,5 +51,10 @@ public class Event implements Serializable {
         return type;
     }
 
+    public Boolean getIsFavorite() { return isFavorite; }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
+    }
 }
 

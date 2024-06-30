@@ -11,12 +11,45 @@
         android:layout_height="wrap_content"
         android:layout_margin="12dp"/>
 
+    <LinearLayout
+        android:id="@+id/filterEventLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/calendarView"
+        android:background="@drawable/filter_event_background"
+        android:paddingVertical="8dp"
+        android:paddingHorizontal="16dp"
+        android:orientation="horizontal"
+        android:layout_marginHorizontal="12dp"
+        android:clickable="true"
+        android:focusable="true">
+
+        <ImageButton
+            android:id="@+id/filterEventIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/outline_favorite_small"
+            android:layout_gravity="center_vertical"
+            android:background="@null"
+            android:layout_marginRight="6dp" />
+
+        <TextView
+            android:id="@+id/filterEventText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="관심 이벤트만 보기"
+            android:textSize="18dp"
+            android:fontFamily="@font/pretendard_semibold" />
+
+    </LinearLayout>
+
+
     <ListView
         android:id="@+id/eventListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="invisible"
-        android:layout_below="@id/calendarView"
+        android:layout_below="@id/filterEventLayout"
         android:divider="@android:color/transparent"
         android:dividerHeight="12dp"
         android:layout_margin="12dp" />
@@ -25,12 +58,12 @@
         android:id="@+id/noEventTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/calendarView"
+        android:layout_below="@id/filterEventLayout"
         android:textSize="18sp"
         android:text="해당 날짜에 이벤트가 없습니다"
         android:textColor="@color/grey"
         android:fontFamily="@font/pretendard_bold"
-        android:padding="16dp"
+        android:padding="20dp"
         android:gravity="center"
         android:visibility="invisible" />
 

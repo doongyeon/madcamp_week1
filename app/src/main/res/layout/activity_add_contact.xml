@@ -70,6 +70,33 @@
             android:layout_marginTop="8dp" />
     </LinearLayout>
 
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/formLayout"
+        android:layout_marginTop="12dp">
+
+        <RadioButton
+            android:id="@+id/radioAdmin"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="운영진"
+            android:textSize="20dp"
+            android:fontFamily="@font/pretendard_bold" />
+
+        <RadioButton
+            android:id="@+id/radioParticipant"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="참가자"
+            android:textSize="20dp"
+            android:fontFamily="@font/pretendard_bold" />
+    </RadioGroup>
+
 
     <android.widget.Button
         android:id="@+id/saveButton"
@@ -80,7 +107,7 @@
         android:background="@drawable/add_contact_button"
         android:textColor="#FFFFFF"
         android:textSize="20sp"
-        android:layout_below="@id/formLayout"
+        android:layout_below="@id/radioGroup"
         android:layout_marginTop="16dp"
         android:layout_centerHorizontal="true" />
 </RelativeLayout>

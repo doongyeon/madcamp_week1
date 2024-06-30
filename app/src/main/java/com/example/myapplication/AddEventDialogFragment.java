@@ -66,7 +66,7 @@ public class AddEventDialogFragment extends DialogFragment {
                         return;
                     }
 
-                    Event event = new Event(title, contents, writer, location, selectedDate, time, "private");
+                    Event event = new Event(title, contents, writer, location, selectedDate, time, "private", false);
                     if (listener != null) {
                         listener.onEventAdded(event);
                     }

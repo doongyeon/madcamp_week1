@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.RadioGroup;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,6 +30,7 @@ public class AddContactActivity extends AppCompatActivity {
         EditText phoneEditText = findViewById(R.id.phoneEditText);
         EditText emailEditText = findViewById(R.id.emailEditText);
         EditText groupEditText = findViewById(R.id.groupEditText);
+        RadioGroup radioGroup = findViewById(R.id.radioGroup);
         Button saveButton = findViewById(R.id.saveButton);
 
         saveButton.setOnClickListener(new View.OnClickListener() {
@@ -39,7 +41,16 @@ public class AddContactActivity extends AppCompatActivity {
                 String email = emailEditText.getText().toString();
                 String group = groupEditText.getText().toString();
 
-                Contact newContact = new Contact(name, phone, email, group);
+                int selectedId = radioGroup.getCheckedRadioButtonId();
+                String role = "";
+                if (selectedId == R.id.radioAdmin) {
+                    role = "admin";
+                } else if (selectedId == R.id.radioParticipant) {
+                    role = "participant";
+                }
+
+                Contact newContact = new Contact(name, phone, email, group, role);
+
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra("newContact", newContact);
                 setResult(RESULT_OK, resultIntent);

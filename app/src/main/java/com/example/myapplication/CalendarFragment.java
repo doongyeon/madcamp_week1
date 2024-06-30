@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment;
 import com.example.myapplication.decorators.EventDecorator;
 import com.example.myapplication.decorators.TodayDecorator;
 import com.example.myapplication.Event;
+import android.widget.LinearLayout;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
@@ -36,12 +37,15 @@ import java.util.List;
 public class CalendarFragment extends Fragment implements AddEventDialogFragment.AddEventDialogListener {
 
     private MaterialCalendarView calendarView;
-    private TextView noEventTextView;
+    private TextView noEventTextView, filterEventText;
     private ListView listViewEvents;
-    private ImageButton addButton;
+    private ImageButton addButton, filterEventIcon;
     private List<Event> events;
     private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private LocalDate selectedDate;
+    private LinearLayout filterEventLayout;
+    private boolean showOnlyFavorites = false;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -50,12 +54,25 @@ public class CalendarFragment extends Fragment implements AddEventDialogFragment
         listViewEvents = view.findViewById(R.id.eventListView);
         noEventTextView = view.findViewById(R.id.noEventTextView);
         addButton = view.findViewById(R.id.buttonAddEvent);
+        filterEventLayout = view.findViewById(R.id.filterEventLayout);
+        filterEventIcon = view.findViewById(R.id.filterEventIcon);
+        filterEventText = view.findViewById(R.id.filterEventText);
 
         loadEvents();
 
         calendarView.setOnDateChangedListener((widget, date, selected) -> {
             selectedDate = LocalDate.of(date.getYear(), date.getMonth(), date.getDay());
-            displayEventsForDate(selectedDate);
+            displayEventsForDate(selectedDate, false);
+        });
+
+        listViewEvents.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Event clickedEvent = (Event) parent.getItemAtPosition(position);
+                Intent intent = new Intent(getContext(), EventInfoActivity.class);
+                intent.putExtra("event", clickedEvent);
+                startActivity(intent);
+            }
         });
 
         addButton.setOnClickListener(v -> {
@@ -65,6 +82,12 @@ public class CalendarFragment extends Fragment implements AddEventDialogFragment
                 dialog.setAddEventDialogListener(CalendarFragment.this);
                 dialog.show(getParentFragmentManager(), "AddEventDialog");
             }
+        });
+
+        filterEventLayout.setOnClickListener(v -> {
+            showOnlyFavorites = !showOnlyFavorites; // 관심 이벤트만 보기 토글
+            displayEventsForDate(selectedDate, showOnlyFavorites);
+            updateFilterButtonText();
         });
 
         addEventDecorators();
@@ -87,11 +110,11 @@ public class CalendarFragment extends Fragment implements AddEventDialogFragment
         }
     }
 
-    private void displayEventsForDate(LocalDate date) {
+    private void displayEventsForDate(LocalDate date, boolean onlyFavorites) {
         List<Event> filteredEvents = new ArrayList<>();
         for (Event event : events) {
             LocalDate eventDate = LocalDate.parse(event.getDate(), dateFormatter);
-            if (eventDate.equals(date)) {
+            if (eventDate.equals(date) && (!onlyFavorites || event.getIsFavorite())) {
                 filteredEvents.add(event);
             }
         }
@@ -135,14 +158,24 @@ public class CalendarFragment extends Fragment implements AddEventDialogFragment
         CalendarDay calendarDay = CalendarDay.from(today.getYear(), today.getMonthValue(), today.getDayOfMonth());
         calendarView.setDateSelected(calendarDay, true);
         selectedDate = today;
-        displayEventsForDate(today);
+        displayEventsForDate(today, false);
         calendarView.addDecorator(new TodayDecorator(calendarDay));
+    }
+
+    private void updateFilterButtonText() {
+        if (showOnlyFavorites) {
+            filterEventIcon.setImageResource(R.drawable.favorite_small);
+            filterEventText.setText("전체 이벤트 보기");
+        } else {
+            filterEventIcon.setImageResource(R.drawable.outline_favorite_small);
+            filterEventText.setText("관심 이벤트만 보기");
+        }
     }
 
     @Override
     public void onEventAdded(Event event) {
         events.add(event);
         addEventDecorators();
-        displayEventsForDate(LocalDate.parse(event.getDate(), dateFormatter));
+        displayEventsForDate(LocalDate.parse(event.getDate(), dateFormatter), false);
     }
 }

@@ -19,7 +19,8 @@ public class ContactUtils {
                 String phone = jsonObject.getString("phone");
                 String email = jsonObject.getString("email");
                 String group = jsonObject.getString("group");
-                contacts.add(new Contact(name, phone, email, group));
+                String role = jsonObject.getString("role");
+                contacts.add(new Contact(name, phone, email, group, role));
             }
         } catch (JSONException e) {
             e.printStackTrace();

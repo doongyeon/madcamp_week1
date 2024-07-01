@@ -47,6 +47,7 @@ public class CalendarFragment extends Fragment {
 
     private static final String SHARED_PREFS_NAME = "calendar_events";
     private static final String EVENTS_KEY = "events";
+    private static final String INITIAL_LOAD_KEY = "initial_load";
 
     private MaterialCalendarView calendarView;
     private TextView noEventTextView, filterEventText;
@@ -66,7 +67,6 @@ public class CalendarFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_calendar, container, false);
         initializeViews(view);
         loadEvents();
-        loadStoredEvents(); // 로컬 저장된 이벤트 불러오기
         setupCalendarView();
         setupListView();
         setupButtons();
@@ -88,15 +88,28 @@ public class CalendarFragment extends Fragment {
     }
 
     private void loadEvents() {
-        try {
-            InputStream is = getResources().openRawResource(R.raw.events);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-            Type eventType = new TypeToken<ArrayList<Event>>() {}.getType();
-            events = new Gson().fromJson(reader, eventType);
-            reader.close();
-        } catch (Exception e) {
-            Log.e("CalendarFragment", "Error reading events.json", e);
-            events = new ArrayList<>();
+        SharedPreferences prefs = getActivity().getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+        boolean initialLoad = prefs.getBoolean(INITIAL_LOAD_KEY, false);
+
+        if (!initialLoad) {
+            try {
+                InputStream is = getResources().openRawResource(R.raw.events);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                Type eventType = new TypeToken<ArrayList<Event>>() {}.getType();
+                events = new Gson().fromJson(reader, eventType);
+                reader.close();
+
+                storeEvents(events); // JSON 파일에서 로드된 이벤트 저장
+
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putBoolean(INITIAL_LOAD_KEY, true);
+                editor.apply();
+            } catch (Exception e) {
+                Log.e("CalendarFragment", "Error reading events.json", e);
+                events = new ArrayList<>();
+            }
+        } else {
+            loadStoredEvents();
         }
     }
 
@@ -105,12 +118,13 @@ public class CalendarFragment extends Fragment {
         String eventsJson = prefs.getString(EVENTS_KEY, null);
         if (eventsJson != null) {
             Type eventType = new TypeToken<ArrayList<Event>>() {}.getType();
-            List<Event> storedEvents = new Gson().fromJson(eventsJson, eventType);
-            events.addAll(storedEvents);
+            events = new Gson().fromJson(eventsJson, eventType);
+        } else {
+            events = new ArrayList<>();
         }
     }
 
-    private void storeEvents() {
+    private void storeEvents(List<Event> events) {
         SharedPreferences prefs = getActivity().getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         String eventsJson = new Gson().toJson(events);
@@ -162,7 +176,7 @@ public class CalendarFragment extends Fragment {
                                 newEventsWithoutTime.add(newEvent);
                             } else {
                                 events.add(newEvent);
-                                storeEvents(); // 이벤트 저장
+                                storeEvents(events); // 이벤트 저장
                             }
                             addEventDecorators();
                             displayEventsForDate(selectedDate, showOnlyFavorites);

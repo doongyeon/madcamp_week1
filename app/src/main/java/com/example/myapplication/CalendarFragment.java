@@ -68,7 +68,7 @@ public class CalendarFragment extends Fragment {
 
         calendarView.setOnDateChangedListener((widget, date, selected) -> {
             selectedDate = LocalDate.of(date.getYear(), date.getMonth(), date.getDay());
-            displayEventsForDate(selectedDate, false);
+            displayEventsForDate(selectedDate, showOnlyFavorites);
         });
 
         listViewEvents.setOnItemClickListener(new AdapterView.OnItemClickListener() {

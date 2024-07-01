@@ -33,8 +33,7 @@ public class MultipleDotDecorator implements DayViewDecorator {
     public void decorate(DayViewFacade view) {
         CalendarDay date = getDateFromDayViewFacade(view);
         if (date != null && datesWithDots.containsKey(date)) {
-            int numberOfDots = datesWithDots.get(date);
-            view.addSpan(new MultipleDotSpan(numberOfDots));
+            view.addSpan(new MultipleDotSpan());
         }
     }
 
@@ -48,25 +47,13 @@ public class MultipleDotDecorator implements DayViewDecorator {
     }
 
     private class MultipleDotSpan implements LineBackgroundSpan {
-        private final int numberOfDots;
-
-        MultipleDotSpan(int numberOfDots) {
-            this.numberOfDots = numberOfDots;
-        }
 
         @Override
         public void drawBackground(Canvas canvas, Paint paint, int left, int right, int top, int baseline, int bottom, CharSequence charSequence, int start, int end, int lineNumber) {
             float radius = 5f;
             float y = baseline + radius + 2;
-
-            // Calculate the total width of dots and the spacing
-            float totalWidth = numberOfDots * 2 * radius + (numberOfDots - 1) * radius;
-            float xStart = (left + right) / 2 - totalWidth / 2;
-
-            for (int i = 0; i < numberOfDots; i++) {
-                float x = xStart + i * (2 * radius + radius);
-                canvas.drawCircle(x, y, radius, paint);
-            }
+            float x = (left + right) / 2;
+            canvas.drawCircle(x, y, radius, paint);
         }
     }
 }

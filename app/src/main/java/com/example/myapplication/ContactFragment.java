@@ -26,6 +26,8 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -46,10 +48,18 @@ public class ContactFragment extends Fragment {
         ImageButton addButton = view.findViewById(R.id.addButton);
         ImageButton filterButton = view.findViewById(R.id.filterButton);
 
-
         String jsonContacts = loadJSONFromResource(R.raw.contacts);
         originalContacts = ContactUtils.parseContacts(jsonContacts);
         contacts = new ArrayList<>(originalContacts);
+
+        // Sort contacts in alphabetical order
+        Collections.sort(contacts, new Comparator<Contact>() {
+            @Override
+            public int compare(Contact c1, Contact c2) {
+                return c1.getName().compareTo(c2.getName());
+            }
+        });
+
         adapter = new ContactAdapter(getContext(), contacts);
         listView.setAdapter(adapter);
 
@@ -92,17 +102,24 @@ public class ContactFragment extends Fragment {
         });
 
         addContactLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                    Intent data = result.getData();
-                    Contact newContact = (Contact) data.getSerializableExtra("newContact");
-                    if (newContact != null) {
-                        contacts.add(newContact);
-                        adapter.notifyDataSetChanged();
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                        Intent data = result.getData();
+                        Contact newContact = (Contact) data.getSerializableExtra("newContact");
+                        if (newContact != null) {
+                            contacts.add(newContact);
+                            // Sort the list after adding a new contact
+                            Collections.sort(contacts, new Comparator<Contact>() {
+                                @Override
+                                public int compare(Contact c1, Contact c2) {
+                                    return c1.getName().compareTo(c2.getName());
+                                }
+                            });
+                            adapter.notifyDataSetChanged();
+                        }
                     }
                 }
-            }
         );
 
         return view;
@@ -162,6 +179,13 @@ public class ContactFragment extends Fragment {
                 }
                 contacts.clear();
                 contacts.addAll(filteredContacts);
+                // Sort the filtered list
+                Collections.sort(contacts, new Comparator<Contact>() {
+                    @Override
+                    public int compare(Contact c1, Contact c2) {
+                        return c1.getName().compareTo(c2.getName());
+                    }
+                });
                 adapter.notifyDataSetChanged();
 
                 dialog.dismiss(); // Close the dialog
@@ -204,6 +228,13 @@ public class ContactFragment extends Fragment {
                 }
             }
         }
+        // Sort the list after filtering
+        Collections.sort(contacts, new Comparator<Contact>() {
+            @Override
+            public int compare(Contact c1, Contact c2) {
+                return c1.getName().compareTo(c2.getName());
+            }
+        });
         adapter.notifyDataSetChanged();
     }
 }

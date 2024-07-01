@@ -110,4 +110,15 @@
         android:layout_below="@id/radioGroup"
         android:layout_marginTop="16dp"
         android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/addByQR"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/saveButton"
+        android:text="QR 코드로 추가하기"
+        android:textSize="18dp"
+        android:fontFamily="@font/pretendard_bold"
+        android:layout_marginTop="12dp"
+        android:layout_alignParentRight="true" />
 </RelativeLayout>

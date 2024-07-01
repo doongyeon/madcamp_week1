@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -32,13 +33,39 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkPermissions() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES)
-                != PackageManager.PERMISSION_GRANTED) {
-            // 권한 요청
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_MEDIA_IMAGES}, REQUEST_PERMISSION);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // 안드로이드 13 이상
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_MEDIA_IMAGES}, REQUEST_PERMISSION);
+            } else {
+                setupViewPagerAndTabs();
+            }
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // 안드로이드 6.0 이상 13 미만
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION);
+            } else {
+                setupViewPagerAndTabs();
+            }
         } else {
-            // 권한이 이미 승인됨
-            setupViewPagerAndTabs();
+            // 안드로이드 6.0 미만
+            setupViewPagerAndTabs(); // 6.0 미만은 런타임 권한 요청이 필요 없음
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                setupViewPagerAndTabs();
+            } else {
+                Toast.makeText(this, "Permission denied. Please grant storage access to use the app.", Toast.LENGTH_SHORT).show();
+                // 권한이 거부된 경우 사용자에게 권한을 재요청할 수 있도록 안내
+                checkPermissions();
+            }
         }
     }
 
@@ -67,19 +94,19 @@ public class MainActivity extends AppCompatActivity {
         }).attach();
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_PERMISSION) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                setupViewPagerAndTabs();
-            } else {
-                Toast.makeText(this, "Permission denied. Please grant storage access to use the app.", Toast.LENGTH_SHORT).show();
-                // 권한이 거부된 경우 사용자에게 권한을 재요청할 수 있도록 안내
-                checkPermissions();
-            }
-        }
-    }
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//        if (requestCode == REQUEST_PERMISSION) {
+//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                setupViewPagerAndTabs();
+//            } else {
+//                Toast.makeText(this, "Permission denied. Please grant storage access to use the app.", Toast.LENGTH_SHORT).show();
+//                // 권한이 거부된 경우 사용자에게 권한을 재요청할 수 있도록 안내
+//                checkPermissions();
+//            }
+//        }
+//    }
 
     private static class ViewPagerAdapter extends FragmentStateAdapter {
         private final Fragment[] fragments = new Fragment[]{

@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.content.Intent;
 import android.text.TextUtils;
@@ -14,14 +15,19 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.AdapterView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import com.example.myapplication.utils.ContactUtils;
 import com.example.myapplication.utils.SoundSearcher;
+import com.example.myapplication.utils.StorageUtils;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -32,11 +38,13 @@ import java.util.List;
 import java.util.Locale;
 
 public class ContactFragment extends Fragment {
+    private static final int REQUEST_PERMISSION_CODE = 100;
 
     private List<Contact> originalContacts;
     private List<Contact> contacts;
     private ContactAdapter adapter;
     private ActivityResultLauncher<Intent> addContactLauncher;
+    private ActivityResultLauncher<String[]> requestPermissionsLauncher;
 
     @Nullable
     @Override
@@ -48,7 +56,13 @@ public class ContactFragment extends Fragment {
         ImageButton addButton = view.findViewById(R.id.addButton);
         ImageButton filterButton = view.findViewById(R.id.filterButton);
 
-        String jsonContacts = loadJSONFromResource(R.raw.contacts);
+        /// JSON 데이터를 SharedPreferences로부터 불러오기
+        String jsonContacts = StorageUtils.loadContacts(getContext());
+        if (jsonContacts == null) {
+            jsonContacts = loadJSONFromResource(R.raw.contacts);
+            StorageUtils.saveContacts(getContext(), jsonContacts); // 처음 불러올 때 SharedPreferences에 저장
+        }
+
         originalContacts = ContactUtils.parseContacts(jsonContacts);
         contacts = new ArrayList<>(originalContacts);
 
@@ -124,6 +138,7 @@ public class ContactFragment extends Fragment {
 
         return view;
     }
+
 
     private void showCustomDialog() {
         // Create the custom dialog

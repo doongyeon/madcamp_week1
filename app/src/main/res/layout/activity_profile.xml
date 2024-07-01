@@ -220,4 +220,12 @@
 
     </LinearLayout>
 
+    <ImageButton
+        android:id="@+id/qr_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:src="@drawable/qr_code_scanner_24px"
+        android:layout_gravity="end" />
+
 </LinearLayout>

@@ -63,7 +63,22 @@ public class EventAdapter extends ArrayAdapter<Event> {
         favoriteButton.setOnClickListener(v -> {
             event.setFavorite(!event.getIsFavorite());
             updateFavoriteIcon(favoriteButton, event.getIsFavorite());
-            Toast.makeText(context, event.getIsFavorite() ? "관심 이벤트에 추가되었습니다" : "관심 이벤트에서 삭제되었습니다", Toast.LENGTH_SHORT).show();
+
+            LayoutInflater inflater = LayoutInflater.from(context);
+
+            View layout = inflater.inflate(
+                    R.layout.custom_toast, null
+            );
+
+            TextView text = layout.findViewById(R.id.toast_text);
+
+            Toast toast = new Toast(context);
+
+            text.setText(event.getIsFavorite() ? "관심 이벤트에 추가되었습니다" : "관심 이벤트에서 삭제되었습니다");
+
+            toast.setDuration(Toast.LENGTH_SHORT);
+            toast.setView(layout);
+            toast.show();
         });
 
         convertView.setOnClickListener(v -> {

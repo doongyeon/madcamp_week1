@@ -1,6 +1,9 @@
 package com.example.myapplication;
 
+import static java.security.AccessController.getContext;
+
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -12,6 +15,8 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.myapplication.utils.QRCodeUtils;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -35,6 +40,7 @@ public class ProfileActivity extends AppCompatActivity {
         TextView groupTextView = findViewById(R.id.groupTextView);
         ImageButton callButton = findViewById(R.id.callButton);
         ImageButton messageButton = findViewById(R.id.messageButton);
+        ImageButton qrCodeButton = findViewById(R.id.qr_code);
         TextView roleTextView = findViewById(R.id.roleTextView);
 
         Contact contact = (Contact) getIntent().getSerializableExtra("contact");
@@ -115,6 +121,25 @@ public class ProfileActivity extends AppCompatActivity {
                 }
             }
         });
+
+        qrCodeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // QR 코드 생성 및 표시
+                generateAndShowQRCode(contact);
+            }
+        });
+    }
+
+    private void generateAndShowQRCode(Contact contact) {
+        // 현재 프로필 정보를 가져와서 JSON 형식으로 변환
+        String qrData = String.format("{\"name\":\"%s\", \"phone\":\"%s\", \"email\":\"%s\", \"group\":\"%s\", \"role\":\"%s\"}",
+                contact.getName(), contact.getPhone(), contact.getEmail(), contact.getGroup(), contact.getRole());
+
+        Bitmap qrCodeBitmap = QRCodeUtils.generateQRCode(qrData);
+
+        QRCodeDialog qrCodeDialog = new QRCodeDialog(ProfileActivity.this, qrCodeBitmap);
+        qrCodeDialog.show();
     }
 }
 

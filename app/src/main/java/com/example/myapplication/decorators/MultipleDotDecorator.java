@@ -19,7 +19,7 @@ public class MultipleDotDecorator implements DayViewDecorator {
     public MultipleDotDecorator(HashMap<CalendarDay, Integer> datesWithDots) {
         this.datesWithDots = datesWithDots;
         this.paint = new Paint();
-        paint.setColor(Color.RED);
+        paint.setColor(Color.LTGRAY);
         paint.setStyle(Paint.Style.FILL);
         paint.setAntiAlias(true);
     }
@@ -50,8 +50,9 @@ public class MultipleDotDecorator implements DayViewDecorator {
 
         @Override
         public void drawBackground(Canvas canvas, Paint paint, int left, int right, int top, int baseline, int bottom, CharSequence charSequence, int start, int end, int lineNumber) {
-            float radius = 5f;
-            float y = baseline + radius + 2;
+            float radius = 10f;
+            float paddingTop = 15f;
+            float y = baseline + radius + paddingTop;
             float x = (left + right) / 2;
             canvas.drawCircle(x, y, radius, paint);
         }

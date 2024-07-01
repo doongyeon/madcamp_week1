@@ -22,6 +22,6 @@ public class TodayDecorator implements DayViewDecorator {
 
     @Override
     public void decorate(DayViewFacade view) {
-        view.addSpan(new ForegroundColorSpan(Color.BLUE)); // 파란색으로 강조 표시
+        view.addSpan(new ForegroundColorSpan(Color.WHITE));
     }
 }

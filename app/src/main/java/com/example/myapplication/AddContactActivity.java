@@ -104,17 +104,18 @@ public class AddContactActivity extends AppCompatActivity {
                     groupEditText.setText(jsonObject.getString("group"));
 
                     String role = jsonObject.getString("role");
+
                     RadioGroup radioGroup = findViewById(R.id.radioGroup);
-                    if ("admin".equals(role)) {
+                    if ("운영진".equals(role)) {
                         radioGroup.check(R.id.radioAdmin);
-                    } else if ("participant".equals(role)) {
+                    } else if ("참가자".equals(role)) {
                         radioGroup.check(R.id.radioParticipant);
                     }
                 } catch (Exception e) {
-                    Toast.makeText(this, "QR 코드 스캔에 실패했습니다.", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, "QR 코드 스캔에 실패했습니다.", Toast.LENGTH_SHORT).show();
                 }
             } else {
-                Toast.makeText(this, "QR 코드 스캔이 취소되었습니다.", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this, "QR 코드 스캔이 취소되었습니다.", Toast.LENGTH_SHORT).show();
             }
         }
     }

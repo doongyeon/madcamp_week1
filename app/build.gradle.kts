@@ -61,6 +61,7 @@ dependencies {
     implementation("com.github.prolificinteractive:material-calendarview:2.0.1")
     implementation("com.google.code.gson:gson:2.8.8")
     implementation("com.jakewharton.threetenabp:threetenabp:1.3.1")
+    implementation("androidx.cardview:cardview:1.0.0")
 
     implementation(libs.appcompat)
     implementation(libs.material)

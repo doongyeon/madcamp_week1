@@ -38,10 +38,20 @@ public class ContactAdapter extends ArrayAdapter<Contact> {
 
         if ("해당없음".equals(contact.getGroup())) {
             textViewGroup.setVisibility(View.GONE);
+
         } else {
             textViewGroup.setVisibility(View.VISIBLE);
         }
 
+        if ("1분반".equals(contact.getGroup())) {
+            textViewGroup.setBackgroundResource(R.drawable.group1_background);
+        } else if ("2분반".equals(contact.getGroup())){
+            textViewGroup.setBackgroundResource(R.drawable.group2_background);
+        } else if ("4분반".equals(contact.getGroup())) {
+            textViewGroup.setBackgroundResource(R.drawable.group4_background);
+        } else {
+            textViewGroup.setBackgroundResource(R.drawable.group_background);
+        }
         return convertView;
     }
 }

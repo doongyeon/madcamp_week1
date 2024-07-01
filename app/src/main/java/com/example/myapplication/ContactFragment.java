@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.os.Bundle;
 import android.content.Intent;
 import android.text.TextUtils;
@@ -8,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -42,6 +44,8 @@ public class ContactFragment extends Fragment {
         ListView listView = view.findViewById(R.id.listView);
         SearchView searchView = view.findViewById(R.id.searchView);
         ImageButton addButton = view.findViewById(R.id.addButton);
+        ImageButton filterButton = view.findViewById(R.id.filterButton);
+
 
         String jsonContacts = loadJSONFromResource(R.raw.contacts);
         originalContacts = ContactUtils.parseContacts(jsonContacts);
@@ -80,6 +84,13 @@ public class ContactFragment extends Fragment {
             }
         });
 
+        filterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showCustomDialog();
+            }
+        });
+
         addContactLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -95,6 +106,69 @@ public class ContactFragment extends Fragment {
         );
 
         return view;
+    }
+
+    private void showCustomDialog() {
+        // Create the custom dialog
+        final Dialog dialog = new Dialog(getActivity());
+        dialog.setContentView(R.layout.custom_dialog);
+
+        // Set up the buttons
+        ImageButton buttonCancel = dialog.findViewById(R.id.button_cancel);
+        ImageButton buttonOk = dialog.findViewById(R.id.button_ok);
+
+        CheckBox checkBox1 = dialog.findViewById(R.id.checkBox1);
+        CheckBox checkBox2 = dialog.findViewById(R.id.checkBox2);
+        CheckBox checkBox3 = dialog.findViewById(R.id.checkBox3);
+        CheckBox checkBox4 = dialog.findViewById(R.id.checkBox4);
+        CheckBox checkBox5 = dialog.findViewById(R.id.checkBox5);
+        CheckBox checkBox6 = dialog.findViewById(R.id.checkBox6);
+
+        buttonCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss(); // Close the dialog
+            }
+        });
+
+        buttonOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Filter contacts based on selected checkboxes
+                List<Contact> filteredContacts = new ArrayList<>();
+                for (Contact contact : originalContacts) {
+                    boolean matchesFilter = false;
+                    if (checkBox1.isChecked()) {
+                        matchesFilter = true;
+                    }
+                    if (checkBox2.isChecked() && contact.getRole().equals("운영진")) {
+                        matchesFilter = true;
+                    }
+                    if (checkBox3.isChecked() && contact.getGroup().equals("1분반")) {
+                        matchesFilter = true;
+                    }
+                    if (checkBox4.isChecked() && contact.getGroup().equals("2분반")) {
+                        matchesFilter = true;
+                    }
+                    if (checkBox5.isChecked() && contact.getGroup().equals("3분반")) {
+                        matchesFilter = true;
+                    }
+                    if (checkBox6.isChecked() && contact.getGroup().equals("4분반")) {
+                        matchesFilter = true;
+                    }
+                    if (matchesFilter) {
+                        filteredContacts.add(contact);
+                    }
+                }
+                contacts.clear();
+                contacts.addAll(filteredContacts);
+                adapter.notifyDataSetChanged();
+
+                dialog.dismiss(); // Close the dialog
+            }
+        });
+
+        dialog.show();
     }
 
     private String loadJSONFromResource(int resourceId) {

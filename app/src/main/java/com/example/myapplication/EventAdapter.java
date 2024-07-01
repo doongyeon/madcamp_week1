@@ -42,15 +42,21 @@ public class EventAdapter extends ArrayAdapter<Event> {
 
         TextView eventTitleTextView = convertView.findViewById(R.id.eventTitleTextView);
         TextView eventContentsTextView = convertView.findViewById(R.id.eventContentsTextView);
+        TextView eventTimeTextView = convertView.findViewById(R.id.eventTimeTextView);
         ImageButton favoriteButton = convertView.findViewById(R.id.favoriteButton);
 
         eventTitleTextView.setText(event.getTitle());
         eventContentsTextView.setText(event.getContents());
+        eventTimeTextView.setText(event.getTime());
 
         if (event.getType().equals("public")) {
             convertView.setBackgroundResource(R.drawable.public_box);
         } else if (event.getType().equals("private")) {
             convertView.setBackgroundResource(R.drawable.contact_box);
+        }
+
+        if (event.getTime().equals("-")) {
+            eventTimeTextView.setVisibility(View.GONE);
         }
 
         updateFavoriteIcon(favoriteButton, event.getIsFavorite());

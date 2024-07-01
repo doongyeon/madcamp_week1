@@ -35,6 +35,7 @@ public class ProfileActivity extends AppCompatActivity {
         TextView groupTextView = findViewById(R.id.groupTextView);
         ImageButton callButton = findViewById(R.id.callButton);
         ImageButton messageButton = findViewById(R.id.messageButton);
+        TextView roleTextView = findViewById(R.id.roleTextView);
 
         Contact contact = (Contact) getIntent().getSerializableExtra("contact");
 
@@ -44,6 +45,28 @@ public class ProfileActivity extends AppCompatActivity {
             phoneTextView.setText(contact.getPhone());
             emailTextView.setText(contact.getEmail());
             groupTextView.setText(contact.getGroup());
+        }
+
+        if ("해당없음".equals(contact.getGroup())) {
+            groupTextView.setVisibility(View.INVISIBLE);
+        } else {
+            groupTextView.setVisibility(View.VISIBLE);
+        }
+
+        if ("1분반".equals(contact.getGroup())) {
+            groupTextView.setBackgroundResource(R.drawable.group1_background);
+        } else if ("2분반".equals(contact.getGroup())){
+            groupTextView.setBackgroundResource(R.drawable.group2_background);
+        } else if ("4분반".equals(contact.getGroup())) {
+            groupTextView.setBackgroundResource(R.drawable.group4_background);
+        } else {
+            groupTextView.setBackgroundResource(R.drawable.group_background);
+        }
+
+        if ("운영진".equals(contact.getRole())) {
+            roleTextView.setVisibility(View.VISIBLE);
+        } else {
+            roleTextView.setVisibility(View.GONE);
         }
 
         LinearLayout callLayout = findViewById(R.id.callLayout);

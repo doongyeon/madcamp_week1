@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +13,8 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -34,7 +37,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CalendarFragment extends Fragment implements AddEventDialogFragment.AddEventDialogListener {
+public class CalendarFragment extends Fragment {
 
     private MaterialCalendarView calendarView;
     private TextView noEventTextView, filterEventText;
@@ -45,6 +48,7 @@ public class CalendarFragment extends Fragment implements AddEventDialogFragment
     private LocalDate selectedDate;
     private LinearLayout filterEventLayout;
     private boolean showOnlyFavorites = false;
+    private ActivityResultLauncher<Intent> addEventLauncher;
 
     @Nullable
     @Override
@@ -75,12 +79,15 @@ public class CalendarFragment extends Fragment implements AddEventDialogFragment
             }
         });
 
-        addButton.setOnClickListener(v -> {
-            if (selectedDate != null) {
-                String date = selectedDate.toString();
-                AddEventDialogFragment dialog = AddEventDialogFragment.newInstance(date);
-                dialog.setAddEventDialogListener(CalendarFragment.this);
-                dialog.show(getParentFragmentManager(), "AddEventDialog");
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (selectedDate != null) {
+                    Intent intent = new Intent(getContext(), AddEventActivity.class);
+                    String date = selectedDate.toString(); // LocalDate를 String으로 변환
+                    intent.putExtra("selectedDate", date);
+                    addEventLauncher.launch(intent);
+            }
             }
         });
 
@@ -89,6 +96,20 @@ public class CalendarFragment extends Fragment implements AddEventDialogFragment
             displayEventsForDate(selectedDate, showOnlyFavorites);
             updateFilterButtonText();
         });
+
+        addEventLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                        Event newEvent = (Event) result.getData().getSerializableExtra("newEvent");
+                        if (newEvent != null) {
+                            events.add(newEvent);
+                            addEventDecorators();
+                            displayEventsForDate(selectedDate, showOnlyFavorites);
+                        }
+                    }
+                }
+        );
 
         addEventDecorators();
         selectTodayDate();
@@ -170,12 +191,5 @@ public class CalendarFragment extends Fragment implements AddEventDialogFragment
             filterEventIcon.setImageResource(R.drawable.outline_favorite_small);
             filterEventText.setText("관심 이벤트만 보기");
         }
-    }
-
-    @Override
-    public void onEventAdded(Event event) {
-        events.add(event);
-        addEventDecorators();
-        displayEventsForDate(LocalDate.parse(event.getDate(), dateFormatter), false);
     }
 }

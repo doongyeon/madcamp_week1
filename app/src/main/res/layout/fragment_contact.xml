@@ -6,19 +6,37 @@
     android:layout_height="match_parent"
     tools:context=".ContactFragment">
 
-    <SearchView
-        android:id="@+id/searchView"
+    <LinearLayout
+        android:id="@+id/topElement"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:queryHint="연락처 검색"
-        android:layout_alignParentTop="true"
-        android:layout_margin="12dp" />
+        android:orientation="horizontal">
+
+        <SearchView
+            android:id="@+id/searchView"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:queryHint="연락처 검색"
+            android:layout_alignParentTop="true"
+            android:layout_margin="12dp" />
+
+        <ImageButton
+            android:id="@+id/filterButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:src="@drawable/tune_24px"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="20dp"/>
+
+    </LinearLayout>
 
     <ListView
         android:id="@+id/listView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/searchView"
+        android:layout_below="@id/topElement"
         android:divider="@null" />
 
     <ImageButton

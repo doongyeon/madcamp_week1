@@ -27,6 +27,7 @@
         <activity android:name=".AddContactActivity" />
         <activity android:name=".ImageActivity" />
         <activity android:name=".EventInfoActivity" />
+        <activity android:name=".AddEventActivity" />
     </application>
 
 </manifest>

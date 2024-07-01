@@ -36,6 +36,8 @@ import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -51,11 +53,25 @@ public class CalendarFragment extends Fragment {
     private LinearLayout filterEventLayout;
     private boolean showOnlyFavorites = false;
     private ActivityResultLauncher<Intent> addEventLauncher;
+    private List<Event> newEventsWithoutTime = new ArrayList<>();
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_calendar, container, false);
+        initializeViews(view);
+        loadEvents();
+        setupCalendarView();
+        setupListView();
+        setupButtons();
+        setupAddEventLauncher();
+        addEventDecorators();
+        selectTodayDate();
+
+        return view;
+    }
+
+    private void initializeViews(View view) {
         calendarView = view.findViewById(R.id.calendarView);
         listViewEvents = view.findViewById(R.id.eventListView);
         noEventTextView = view.findViewById(R.id.noEventTextView);
@@ -63,60 +79,6 @@ public class CalendarFragment extends Fragment {
         filterEventLayout = view.findViewById(R.id.filterEventLayout);
         filterEventIcon = view.findViewById(R.id.filterEventIcon);
         filterEventText = view.findViewById(R.id.filterEventText);
-
-        loadEvents();
-
-        calendarView.setOnDateChangedListener((widget, date, selected) -> {
-            selectedDate = LocalDate.of(date.getYear(), date.getMonth(), date.getDay());
-            displayEventsForDate(selectedDate, showOnlyFavorites);
-        });
-
-        listViewEvents.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Event clickedEvent = (Event) parent.getItemAtPosition(position);
-                Intent intent = new Intent(getContext(), EventInfoActivity.class);
-                intent.putExtra("event", clickedEvent);
-                startActivity(intent);
-            }
-        });
-
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (selectedDate != null) {
-                    Intent intent = new Intent(getContext(), AddEventActivity.class);
-                    String date = selectedDate.toString(); // LocalDate를 String으로 변환
-                    intent.putExtra("selectedDate", date);
-                    addEventLauncher.launch(intent);
-            }
-            }
-        });
-
-        filterEventLayout.setOnClickListener(v -> {
-            showOnlyFavorites = !showOnlyFavorites; // 관심 이벤트만 보기 토글
-            displayEventsForDate(selectedDate, showOnlyFavorites);
-            updateFilterButtonText();
-        });
-
-        addEventLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                        Event newEvent = (Event) result.getData().getSerializableExtra("newEvent");
-                        if (newEvent != null) {
-                            events.add(newEvent);
-                            addEventDecorators();
-                            displayEventsForDate(selectedDate, showOnlyFavorites);
-                        }
-                    }
-                }
-        );
-
-        addEventDecorators();
-        selectTodayDate();
-
-        return view;
     }
 
     private void loadEvents() {
@@ -126,14 +88,99 @@ public class CalendarFragment extends Fragment {
             Type eventType = new TypeToken<ArrayList<Event>>() {}.getType();
             events = new Gson().fromJson(reader, eventType);
             reader.close();
-
         } catch (Exception e) {
             Log.e("CalendarFragment", "Error reading events.json", e);
             events = new ArrayList<>();
         }
     }
 
+    private void setupCalendarView() {
+        calendarView.setOnDateChangedListener((widget, date, selected) -> {
+            selectedDate = LocalDate.of(date.getYear(), date.getMonth(), date.getDay());
+            displayEventsForDate(selectedDate, showOnlyFavorites);
+        });
+    }
+
+    private void setupListView() {
+        listViewEvents.setOnItemClickListener((parent, view, position, id) -> {
+            Event clickedEvent = (Event) parent.getItemAtPosition(position);
+            Intent intent = new Intent(getContext(), EventInfoActivity.class);
+            intent.putExtra("event", clickedEvent);
+            startActivity(intent);
+        });
+    }
+
+    private void setupButtons() {
+        addButton.setOnClickListener(v -> {
+            if (selectedDate != null) {
+                Intent intent = new Intent(getContext(), AddEventActivity.class);
+                String date = selectedDate.toString();
+                intent.putExtra("selectedDate", date);
+                addEventLauncher.launch(intent);
+            }
+        });
+
+        filterEventLayout.setOnClickListener(v -> {
+            showOnlyFavorites = !showOnlyFavorites;
+            displayEventsForDate(selectedDate, showOnlyFavorites);
+            updateFilterButtonText();
+        });
+    }
+
+    private void setupAddEventLauncher() {
+        addEventLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                        Event newEvent = (Event) result.getData().getSerializableExtra("newEvent");
+                        if (newEvent != null) {
+                            if (newEvent.getTime().isEmpty()) {
+                                newEventsWithoutTime.add(newEvent);
+                            } else {
+                                events.add(newEvent);
+                            }
+                            addEventDecorators();
+                            displayEventsForDate(selectedDate, showOnlyFavorites);
+                        }
+                    }
+                }
+        );
+    }
+
     private void displayEventsForDate(LocalDate date, boolean onlyFavorites) {
+        List<Event> filteredEvents = filterEventsForDate(date, onlyFavorites);
+        List<Event> filteredNewEventsWithoutTime = filterNewEventsWithoutTimeForDate(date, onlyFavorites);
+
+        // Combine and sort the filtered events
+        List<Event> combinedEvents = new ArrayList<>(filteredEvents);
+        combinedEvents.addAll(filteredNewEventsWithoutTime);
+
+        Collections.sort(combinedEvents, new Comparator<Event>() {
+            @Override
+            public int compare(Event e1, Event e2) {
+                if (e1.getType().equals("public") && !e2.getType().equals("public")) {
+                    return -1;
+                }
+                if (!e1.getType().equals("public") && e2.getType().equals("public")) {
+                    return 1;
+                }
+                if (e1.getTime().isEmpty() && e2.getTime().isEmpty()) {
+                    return 0;
+                }
+                if (e1.getTime().isEmpty()) {
+                    return -1;
+                }
+                if (e2.getTime().isEmpty()) {
+                    return 1;
+                }
+                return e1.getTime().compareTo(e2.getTime());
+            }
+        });
+
+        updateEventListView(combinedEvents);
+    }
+
+    private List<Event> filterEventsForDate(LocalDate date, boolean onlyFavorites) {
         List<Event> filteredEvents = new ArrayList<>();
         for (Event event : events) {
             LocalDate eventDate = LocalDate.parse(event.getDate(), dateFormatter);
@@ -141,7 +188,21 @@ public class CalendarFragment extends Fragment {
                 filteredEvents.add(event);
             }
         }
+        return filteredEvents;
+    }
 
+    private List<Event> filterNewEventsWithoutTimeForDate(LocalDate date, boolean onlyFavorites) {
+        List<Event> filteredNewEventsWithoutTime = new ArrayList<>();
+        for (Event event : newEventsWithoutTime) {
+            LocalDate eventDate = LocalDate.parse(event.getDate(), dateFormatter);
+            if (eventDate.equals(date) && (!onlyFavorites || event.getIsFavorite())) {
+                filteredNewEventsWithoutTime.add(event);
+            }
+        }
+        return filteredNewEventsWithoutTime;
+    }
+
+    private void updateEventListView(List<Event> filteredEvents) {
         if (filteredEvents.isEmpty()) {
             noEventTextView.setVisibility(View.VISIBLE);
             listViewEvents.setVisibility(View.INVISIBLE);
@@ -152,14 +213,11 @@ public class CalendarFragment extends Fragment {
             EventAdapter adapter = new EventAdapter(getContext(), filteredEvents);
             listViewEvents.setAdapter(adapter);
 
-            listViewEvents.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Event clickedEvent = (Event) parent.getItemAtPosition(position);
-                    Intent intent = new Intent(getContext(), EventInfoActivity.class);
-                    intent.putExtra("event", clickedEvent);
-                    startActivity(intent);
-                }
+            listViewEvents.setOnItemClickListener((parent, view, position, id) -> {
+                Event clickedEvent = (Event) parent.getItemAtPosition(position);
+                Intent intent = new Intent(getContext(), EventInfoActivity.class);
+                intent.putExtra("event", clickedEvent);
+                startActivity(intent);
             });
         }
     }
@@ -170,15 +228,11 @@ public class CalendarFragment extends Fragment {
         HashMap<CalendarDay, Integer> datesWithDots = new HashMap<>();
 
         for (Event event : events) {
-            try {
-                LocalDate eventDate = LocalDate.parse(event.getDate(), dateFormatter);
-                CalendarDay calendarDay = CalendarDay.from(eventDate.getYear(), eventDate.getMonthValue(), eventDate.getDayOfMonth());
+            addEventToDecorator(datesWithDots, event);
+        }
 
-                // 이벤트 수에 따라 dots 정보 추가
-                datesWithDots.put(calendarDay, datesWithDots.getOrDefault(calendarDay, 0) + 1);
-            } catch (Exception e) {
-                Log.e("CalendarFragment", "Error adding event decorator", e);
-            }
+        for (Event event : newEventsWithoutTime) {
+            addEventToDecorator(datesWithDots, event);
         }
 
         calendarView.addDecorator(new MultipleDotDecorator(datesWithDots));
@@ -187,6 +241,16 @@ public class CalendarFragment extends Fragment {
         LocalDate today = LocalDate.now();
         CalendarDay todayCalendarDay = CalendarDay.from(today.getYear(), today.getMonthValue(), today.getDayOfMonth());
         calendarView.addDecorator(new TodayDecorator(todayCalendarDay));
+    }
+
+    private void addEventToDecorator(HashMap<CalendarDay, Integer> datesWithDots, Event event) {
+        try {
+            LocalDate eventDate = LocalDate.parse(event.getDate(), dateFormatter);
+            CalendarDay calendarDay = CalendarDay.from(eventDate.getYear(), eventDate.getMonthValue(), eventDate.getDayOfMonth());
+            datesWithDots.put(calendarDay, datesWithDots.getOrDefault(calendarDay, 0) + 1);
+        } catch (Exception e) {
+            Log.e("CalendarFragment", "Error adding event decorator", e);
+        }
     }
 
     private void selectTodayDate() {

@@ -3,26 +3,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <ImageButton
-        android:id="@+id/toggle_layout_button"
+    <Button
+        android:id="@+id/done_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_4x4"
-        android:background="@null"
-        android:minHeight="0dp"
-        android:minWidth="0dp"
+        android:text="Done"
+        android:layout_gravity="end"
         android:layout_margin="16dp"/>
-
-    <ImageButton
-        android:id="@+id/select_images_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/add_24px"
-        android:background="@null"
-        android:minHeight="0dp"
-        android:minWidth="0dp"
-        android:layout_margin="16dp"
-        android:layout_gravity="end"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"

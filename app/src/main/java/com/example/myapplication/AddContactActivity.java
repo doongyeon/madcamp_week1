@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.content.Intent;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,6 +22,8 @@ import com.google.zxing.integration.android.IntentResult;
 import org.json.JSONObject;
 
 public class AddContactActivity extends AppCompatActivity {
+
+    private static final String TAG = "AddContactActivity";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,7 +44,7 @@ public class AddContactActivity extends AppCompatActivity {
         EditText groupEditText = findViewById(R.id.groupEditText);
         RadioGroup radioGroup = findViewById(R.id.radioGroup);
         Button saveButton = findViewById(R.id.saveButton);
-        TextView addByQR =findViewById(R.id.addByQR);
+        TextView addByQR = findViewById(R.id.addByQR);
 
         SpannableString content = new SpannableString("QR 코드로 추가하기");
         content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
@@ -89,6 +92,7 @@ public class AddContactActivity extends AppCompatActivity {
             if (result.getContents() != null) {
                 // QR 코드 스캔 결과 처리
                 String qrData = result.getContents();
+                Log.d(TAG, "QR Data: " + qrData);
                 // QR 코드에서 연락처 정보를 파싱하고, EditText에 설정하는 로직 추가
                 // 예: JSON 형식으로 파싱
                 try {
@@ -104,16 +108,26 @@ public class AddContactActivity extends AppCompatActivity {
                     groupEditText.setText(jsonObject.getString("group"));
 
                     String role = jsonObject.getString("role");
+                    Log.d(TAG, "Parsed Role: " + role);
                     RadioGroup radioGroup = findViewById(R.id.radioGroup);
-                    if ("admin".equals(role)) {
-                        radioGroup.check(R.id.radioAdmin);
-                    } else if ("participant".equals(role)) {
-                        radioGroup.check(R.id.radioParticipant);
-                    }
+                    radioGroup.clearCheck(); // 기존 체크된 상태 해제
+                    radioGroup.post(() -> {
+                        if ("운영진".equals(role)) {
+                            radioGroup.check(R.id.radioAdmin);
+                            Log.d(TAG, "Admin radio button checked");
+                        } else if ("참가자".equals(role)) {
+                            radioGroup.check(R.id.radioParticipant);
+                            Log.d(TAG, "Participant radio button checked");
+                        }
+                        int checkedRadioButtonId = radioGroup.getCheckedRadioButtonId();
+                        Log.d(TAG, "Checked RadioButton ID: " + checkedRadioButtonId);
+                    });
                 } catch (Exception e) {
+                    Log.e(TAG, "QR 코드 스캔에 실패했습니다.", e);
                     Toast.makeText(this, "QR 코드 스캔에 실패했습니다.", Toast.LENGTH_SHORT).show();
                 }
             } else {
+                Log.d(TAG, "QR 코드 스캔이 취소되었습니다.");
                 Toast.makeText(this, "QR 코드 스캔이 취소되었습니다.", Toast.LENGTH_SHORT).show();
             }
         }

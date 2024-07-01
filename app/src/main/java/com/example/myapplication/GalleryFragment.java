@@ -1,7 +1,9 @@
 package com.example.myapplication;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,19 +19,16 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import android.media.ExifInterface;
-
 public class GalleryFragment extends Fragment {
 
     private static final int REQUEST_CODE_SELECT_IMAGES = 1;
+    private static final String SHARED_PREFS_NAME = "gallery_prefs";
+    private static final String SELECTED_IMAGES_KEY = "selected_images";
     private RecyclerView recyclerView;
     private ImageAdapter imageAdapter;
     private List<String> imageList;
@@ -43,7 +42,7 @@ public class GalleryFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
-        selectedImages = new HashSet<>();
+        selectedImages = loadSelectedImages();
 
         ImageButton toggleLayoutButton = view.findViewById(R.id.toggle_layout_button);
         toggleLayoutButton.setOnClickListener(new View.OnClickListener() {
@@ -72,7 +71,7 @@ public class GalleryFragment extends Fragment {
 
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_MEDIA_IMAGES)
                 == PackageManager.PERMISSION_GRANTED) {
-            imageList = new ArrayList<>(); // 초기에는 빈 리스트
+            imageList = new ArrayList<>(selectedImages);
             imageAdapter = new ImageAdapter(imageList, selectedImages, isThreeColumnLayout, false);
             recyclerView.setAdapter(imageAdapter);
         } else {
@@ -90,35 +89,23 @@ public class GalleryFragment extends Fragment {
             if (selectedImagePaths != null) {
                 selectedImages.clear();
                 selectedImages.addAll(selectedImagePaths);
+                saveSelectedImages(selectedImages); // 선택된 이미지 경로 저장
                 imageList.clear();
                 imageList.addAll(selectedImagePaths);
-                sortImagesByDate(imageList); // 날짜 기준으로 정렬
                 imageAdapter.notifyDataSetChanged();
             }
         }
     }
 
-    private void sortImagesByDate(List<String> images) {
-        Collections.sort(images, new Comparator<String>() {
-            @Override
-            public int compare(String image1, String image2) {
-                String date1 = getImageDate(image1);
-                String date2 = getImageDate(image2);
-                if (date1 == null && date2 == null) return 0;
-                if (date1 == null) return 1;
-                if (date2 == null) return -1;
-                return date2.compareTo(date1);
-            }
-        });
+    private void saveSelectedImages(Set<String> selectedImages) {
+        SharedPreferences prefs = getContext().getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putStringSet(SELECTED_IMAGES_KEY, selectedImages);
+        editor.apply();
     }
 
-    private String getImageDate(String imagePath) {
-        try {
-            ExifInterface exif = new ExifInterface(imagePath);
-            return exif.getAttribute(ExifInterface.TAG_DATETIME);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+    private Set<String> loadSelectedImages() {
+        SharedPreferences prefs = getContext().getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+        return prefs.getStringSet(SELECTED_IMAGES_KEY, new HashSet<>());
     }
 }

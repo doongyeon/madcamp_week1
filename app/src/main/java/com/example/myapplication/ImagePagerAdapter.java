@@ -3,7 +3,6 @@ package com.example.myapplication;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,9 +15,11 @@ import java.util.List;
 public class ImagePagerAdapter extends RecyclerView.Adapter<ImagePagerAdapter.ViewHolder> {
 
     private List<String> imageList;
+    private ImageInfoListener imageInfoListener;
 
-    public ImagePagerAdapter(List<String> imageList) {
+    public ImagePagerAdapter(List<String> imageList, ImageInfoListener imageInfoListener) {
         this.imageList = imageList;
+        this.imageInfoListener = imageInfoListener;
     }
 
     @NonNull
@@ -37,11 +38,7 @@ public class ImagePagerAdapter extends RecyclerView.Adapter<ImagePagerAdapter.Vi
                 .into(holder.photoView);
 
         holder.photoView.setOnClickListener(v -> {
-            if (holder.textImageInfo.getVisibility() == View.VISIBLE) {
-                holder.textImageInfo.setVisibility(View.GONE);
-            } else {
-                holder.textImageInfo.setVisibility(View.VISIBLE);
-            }
+            imageInfoListener.onImageClick(position);
         });
     }
 
@@ -52,12 +49,14 @@ public class ImagePagerAdapter extends RecyclerView.Adapter<ImagePagerAdapter.Vi
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         PhotoView photoView;
-        TextView textImageInfo;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             photoView = itemView.findViewById(R.id.full_image_view);
-            textImageInfo = itemView.findViewById(R.id.text_image_info);
         }
+    }
+
+    public interface ImageInfoListener {
+        void onImageClick(int position);
     }
 }

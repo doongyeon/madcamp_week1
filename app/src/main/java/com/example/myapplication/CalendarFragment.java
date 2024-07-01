@@ -1,7 +1,9 @@
 package com.example.myapplication;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -43,6 +45,9 @@ import java.util.List;
 
 public class CalendarFragment extends Fragment {
 
+    private static final String SHARED_PREFS_NAME = "calendar_events";
+    private static final String EVENTS_KEY = "events";
+
     private MaterialCalendarView calendarView;
     private TextView noEventTextView, filterEventText;
     private ListView listViewEvents;
@@ -61,6 +66,7 @@ public class CalendarFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_calendar, container, false);
         initializeViews(view);
         loadEvents();
+        loadStoredEvents(); // 로컬 저장된 이벤트 불러오기
         setupCalendarView();
         setupListView();
         setupButtons();
@@ -92,6 +98,24 @@ public class CalendarFragment extends Fragment {
             Log.e("CalendarFragment", "Error reading events.json", e);
             events = new ArrayList<>();
         }
+    }
+
+    private void loadStoredEvents() {
+        SharedPreferences prefs = getActivity().getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+        String eventsJson = prefs.getString(EVENTS_KEY, null);
+        if (eventsJson != null) {
+            Type eventType = new TypeToken<ArrayList<Event>>() {}.getType();
+            List<Event> storedEvents = new Gson().fromJson(eventsJson, eventType);
+            events.addAll(storedEvents);
+        }
+    }
+
+    private void storeEvents() {
+        SharedPreferences prefs = getActivity().getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        String eventsJson = new Gson().toJson(events);
+        editor.putString(EVENTS_KEY, eventsJson);
+        editor.apply();
     }
 
     private void setupCalendarView() {
@@ -138,6 +162,7 @@ public class CalendarFragment extends Fragment {
                                 newEventsWithoutTime.add(newEvent);
                             } else {
                                 events.add(newEvent);
+                                storeEvents(); // 이벤트 저장
                             }
                             addEventDecorators();
                             displayEventsForDate(selectedDate, showOnlyFavorites);

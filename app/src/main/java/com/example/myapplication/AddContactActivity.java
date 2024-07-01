@@ -124,11 +124,11 @@ public class AddContactActivity extends AppCompatActivity {
                     });
                 } catch (Exception e) {
                     Log.e(TAG, "QR 코드 스캔에 실패했습니다.", e);
-                    Toast.makeText(this, "QR 코드 스캔에 실패했습니다.", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, "QR 코드 스캔에 실패했습니다.", Toast.LENGTH_SHORT).show();
                 }
             } else {
                 Log.d(TAG, "QR 코드 스캔이 취소되었습니다.");
-                Toast.makeText(this, "QR 코드 스캔이 취소되었습니다.", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this, "QR 코드 스캔이 취소되었습니다.", Toast.LENGTH_SHORT).show();
             }
         }
     }

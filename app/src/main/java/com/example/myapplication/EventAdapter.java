@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +14,16 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.util.List;
 
 public class EventAdapter extends ArrayAdapter<Event> {
+
+    private static final String SHARED_PREFS_NAME = "calendar_events";
+    private static final String EVENTS_KEY = "events";
 
     private Context context;
     private List<Event> events;
@@ -63,6 +71,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
         favoriteButton.setOnClickListener(v -> {
             event.setFavorite(!event.getIsFavorite());
             updateFavoriteIcon(favoriteButton, event.getIsFavorite());
+            saveEventsToPreferences();
 
             LayoutInflater inflater = LayoutInflater.from(context);
 
@@ -96,6 +105,31 @@ public class EventAdapter extends ArrayAdapter<Event> {
         } else {
             button.setImageResource(R.drawable.favorite_24px);
         }
+    }
+
+    private void saveEventsToPreferences() {
+        // 기존의 이벤트 목록을 불러옵니다
+        SharedPreferences prefs = context.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+        String eventsJson = prefs.getString(EVENTS_KEY, null);
+        Type eventType = new TypeToken<List<Event>>() {}.getType();
+        List<Event> existingEvents = new Gson().fromJson(eventsJson, eventType);
+
+        // 기존 이벤트 목록을 수정된 이벤트 목록으로 업데이트합니다
+        for (int i = 0; i < existingEvents.size(); i++) {
+            Event existingEvent = existingEvents.get(i);
+            for (Event event : events) {
+                if (existingEvent.getTitle().equals(event.getTitle())) { // assuming Event has an getId() method
+                    existingEvents.set(i, event);
+                    break;
+                }
+            }
+        }
+
+        // 업데이트된 이벤트 목록을 저장합니다
+        SharedPreferences.Editor editor = prefs.edit();
+        String updatedEventsJson = new Gson().toJson(existingEvents);
+        editor.putString(EVENTS_KEY, updatedEventsJson);
+        editor.apply();
     }
 
     // 시간을 두 자리 숫자로 포맷팅하는 메서드

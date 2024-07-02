@@ -20,6 +20,7 @@ import com.google.gson.reflect.TypeToken;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.List;
 
 public class EventInfoActivity extends AddContactActivity {
@@ -132,13 +133,6 @@ public class EventInfoActivity extends AddContactActivity {
         }
     }
 
-    private void deleteEvent(Event event) {
-        Intent resultIntent = new Intent();
-        resultIntent.putExtra("deletedEvent", event);
-        setResult(Activity.RESULT_OK, resultIntent);
-        finish(); // 현재 액티비티 종료
-    }
-
     // 이름을 기반으로 Contact를 찾는 메서드
     private Contact findContactByName(String name) {
         if (contacts == null) {
@@ -153,4 +147,15 @@ public class EventInfoActivity extends AddContactActivity {
 
         return null; // 해당하는 Contact를 찾지 못한 경우
     }
+
+    private void deleteEvent(Event event) {
+        EventAdapter adapter = new EventAdapter(this, new ArrayList<>()); // 임시로 빈 어댑터 생성
+        adapter.deleteEvent(event);
+
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra("deletedEvent", event);
+        setResult(Activity.RESULT_OK, resultIntent);
+        finish(); // 현재 액티비티 종료
+    }
+
 }

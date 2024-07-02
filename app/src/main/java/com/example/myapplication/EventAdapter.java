@@ -142,4 +142,26 @@ public class EventAdapter extends ArrayAdapter<Event> {
             return time;
         }
     }
+
+    public void deleteEvent(Event event) {
+        SharedPreferences prefs = context.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+        String eventsJson = prefs.getString(EVENTS_KEY, null);
+        Gson gson = new Gson();
+        Type eventType = new TypeToken<List<Event>>() {}.getType();
+        List<Event> existingEvents = gson.fromJson(eventsJson, eventType);
+
+        // 기존 이벤트 목록에서 이벤트 삭제
+        existingEvents.removeIf(existingEvent -> existingEvent.getTitle().equals(event.getTitle()));
+
+        // 업데이트된 이벤트 목록을 저장
+        SharedPreferences.Editor editor = prefs.edit();
+        String updatedEventsJson = gson.toJson(existingEvents);
+        editor.putString(EVENTS_KEY, updatedEventsJson);
+        editor.apply();
+
+        // Adapter의 데이터 변경
+        events.remove(event);
+        notifyDataSetChanged();
+    }
+
 }

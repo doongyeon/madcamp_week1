@@ -14,9 +14,8 @@ public class FirstSplashActivity extends AppCompatActivity {
         new Handler().postDelayed(() -> {
             Intent intent = new Intent(FirstSplashActivity.this, SecondSplashActivity.class);
             startActivity(intent);
-            overridePendingTransition(0, 0);
+            overridePendingTransition(0, 0); // 애니메이션 제거
             finish();
-        }, 1000); // 0.5초 지연
+        }, 1000); // 1초 지연
     }
 }
-

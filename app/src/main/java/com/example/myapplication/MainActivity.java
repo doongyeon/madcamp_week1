@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
     private void setupViewPagerAndTabs() {
         ViewPagerAdapter adapter = new ViewPagerAdapter(this);
         binding.viewPager.setAdapter(adapter);
+        binding.viewPager.setOffscreenPageLimit(3); // 페이지 제한 설정
 
         new TabLayoutMediator(binding.tabLayout, binding.viewPager, new TabLayoutMediator.TabConfigurationStrategy() {
             @Override
@@ -94,24 +95,10 @@ public class MainActivity extends AppCompatActivity {
         }).attach();
     }
 
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        if (requestCode == REQUEST_PERMISSION) {
-//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                setupViewPagerAndTabs();
-//            } else {
-//                Toast.makeText(this, "Permission denied. Please grant storage access to use the app.", Toast.LENGTH_SHORT).show();
-//                // 권한이 거부된 경우 사용자에게 권한을 재요청할 수 있도록 안내
-//                checkPermissions();
-//            }
-//        }
-//    }
-
     private static class ViewPagerAdapter extends FragmentStateAdapter {
         private final Fragment[] fragments = new Fragment[]{
                 new ContactFragment(),
-                new GalleryFragment(), // SecondFragment를 GalleryFragment로 대체
+                new GalleryFragment(),
                 new CalendarFragment()
         };
 

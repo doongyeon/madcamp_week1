@@ -44,7 +44,7 @@ public class ContactFragment extends Fragment {
     private List<Contact> contacts;
     private ContactAdapter adapter;
     private ActivityResultLauncher<Intent> addContactLauncher;
-    private ActivityResultLauncher<String[]> requestPermissionsLauncher;
+    private ActivityResultLauncher<Intent> profileLauncher;
 
     @Nullable
     @Override
@@ -83,7 +83,7 @@ public class ContactFragment extends Fragment {
                 Contact clickedContact = (Contact) parent.getItemAtPosition(position);
                 Intent intent = new Intent(getContext(), ProfileActivity.class);
                 intent.putExtra("contact", clickedContact);
-                startActivity(intent);
+                profileLauncher.launch(intent);
             }
         });
 
@@ -123,6 +123,7 @@ public class ContactFragment extends Fragment {
                         Contact newContact = (Contact) data.getSerializableExtra("newContact");
                         if (newContact != null) {
                             contacts.add(newContact);
+                            originalContacts.add(newContact);
                             // Sort the list after adding a new contact
                             Collections.sort(contacts, new Comparator<Contact>() {
                                 @Override
@@ -131,6 +132,22 @@ public class ContactFragment extends Fragment {
                                 }
                             });
                             adapter.notifyDataSetChanged();
+
+                            String json_contacts = ContactUtils.contactsToJson(originalContacts);
+                            StorageUtils.saveContacts(getContext(), json_contacts);
+                        }
+                    }
+                }
+        );
+
+        profileLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                        Intent data = result.getData();
+                        Contact deletedContact = (Contact) data.getSerializableExtra("deletedContact");
+                        if (deletedContact != null) {
+                            deleteContact(deletedContact);
                         }
                     }
                 }
@@ -251,5 +268,19 @@ public class ContactFragment extends Fragment {
             }
         });
         adapter.notifyDataSetChanged();
+    }
+
+    public void deleteContact(Contact contact) {
+        String contactName = contact.getName();
+
+        // 이름이 같은 연락처 삭제
+        originalContacts.removeIf(c -> c.getName().equals(contactName));
+        contacts.removeIf(c -> c.getName().equals(contactName));
+
+        adapter.notifyDataSetChanged();
+
+        // SharedPreferences에 저장
+        String json_contacts = ContactUtils.contactsToJson(originalContacts);
+        StorageUtils.saveContacts(getContext(), json_contacts);
     }
 }

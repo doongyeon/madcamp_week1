@@ -27,5 +27,23 @@ public class ContactUtils {
         }
         return contacts;
     }
+
+    public static String contactsToJson(List<Contact> contacts) {
+        JSONArray jsonArray = new JSONArray();
+        for (Contact contact : contacts) {
+            JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put("name", contact.getName());
+                jsonObject.put("phone", contact.getPhone());
+                jsonObject.put("email", contact.getEmail());
+                jsonObject.put("group", contact.getGroup());
+                jsonObject.put("role", contact.getRole());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            jsonArray.put(jsonObject);
+        }
+        return jsonArray.toString();
+    }
 }
 

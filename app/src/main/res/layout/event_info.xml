@@ -12,14 +12,29 @@
         android:layout_margin="16dp"
         android:background="@null" />
 
-    <TextView
-        android:id="@+id/titleText"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginTop="24dp"
-        android:textSize="36dp"
-        android:fontFamily="@font/pretendard_extrabold"/>
+        android:orientation="horizontal"
+        android:paddingTop="24dp"
+        android:paddingHorizontal="24dp">
+
+        <TextView
+            android:id="@+id/titleText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="36dp"
+            android:fontFamily="@font/pretendard_extrabold"/>
+
+        <ImageButton
+            android:id="@+id/deleteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end | center_vertical"
+            android:src="@drawable/delete_24px"
+            android:background="@null" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/contentText"

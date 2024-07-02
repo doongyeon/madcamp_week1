@@ -26,6 +26,10 @@ import com.example.myapplication.decorators.TodayDecorator;
 import com.example.myapplication.decorators.MultipleDotDecorator;
 import com.example.myapplication.Event;
 import android.widget.LinearLayout;
+import android.widget.Toast;
+
+import com.example.myapplication.utils.ContactUtils;
+import com.example.myapplication.utils.StorageUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
@@ -59,6 +63,7 @@ public class CalendarFragment extends Fragment {
     private LinearLayout filterEventLayout;
     private boolean showOnlyFavorites = false;
     private ActivityResultLauncher<Intent> addEventLauncher;
+    private ActivityResultLauncher<Intent> eventInfoLauncher;
     private List<Event> newEventsWithoutTime = new ArrayList<>();
 
     @Nullable
@@ -71,6 +76,7 @@ public class CalendarFragment extends Fragment {
         setupListView();
         setupButtons();
         setupAddEventLauncher();
+        setupEventInfoLauncher();
         addEventDecorators();
         selectTodayDate();
 
@@ -144,7 +150,7 @@ public class CalendarFragment extends Fragment {
             Event clickedEvent = (Event) parent.getItemAtPosition(position);
             Intent intent = new Intent(getContext(), EventInfoActivity.class);
             intent.putExtra("event", clickedEvent);
-            startActivity(intent);
+            eventInfoLauncher.launch(intent);
         });
     }
 
@@ -180,6 +186,21 @@ public class CalendarFragment extends Fragment {
                             }
                             addEventDecorators();
                             displayEventsForDate(selectedDate, showOnlyFavorites);
+                        }
+                    }
+                }
+        );
+    }
+
+    private void setupEventInfoLauncher() {
+        eventInfoLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                        Intent data = result.getData();
+                        Event deletedEvent = (Event) data.getSerializableExtra("deletedEvent");
+                        if (deletedEvent != null) {
+                            deleteEvent(deletedEvent);
                         }
                     }
                 }
@@ -309,5 +330,12 @@ public class CalendarFragment extends Fragment {
             filterEventIcon.setImageResource(R.drawable.outline_favorite_small);
             filterEventText.setText("관심 이벤트만 보기");
         }
+    }
+
+    public void deleteEvent(Event event) {
+        String eventTitle = event.getTitle();
+        events.removeIf(c -> c.getTitle().equals(eventTitle));
+
+        storeEvents(events);
     }
 }

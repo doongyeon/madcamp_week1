@@ -2,10 +2,13 @@ package com.example.myapplication;
 
 import static java.security.AccessController.getContext;
 
+import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -14,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication.utils.QRCodeUtils;
@@ -129,6 +133,54 @@ public class ProfileActivity extends AppCompatActivity {
                 generateAndShowQRCode(contact);
             }
         });
+
+        ImageButton deleteButton = findViewById(R.id.deleteButton);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDeleteConfirmationDialog(contact);
+            }
+        });
+    }
+
+    private void showDeleteConfirmationDialog(Contact contact) {
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View dialogView = inflater.inflate(R.layout.dialog_delete, null);
+        TextView dialogMessage = dialogView.findViewById(R.id.dialog_message);
+        dialogMessage.setText(contact.getName() + "님의 연락처를 삭제하시겠습니까?");
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .create();
+
+        ImageButton positiveButton = dialogView.findViewById(R.id.positiveButton);
+        ImageButton negativeButton = dialogView.findViewById(R.id.negativeButton);
+
+        positiveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 연락처 삭제 로직 추가
+                deleteContact(contact);
+                dialog.dismiss();
+            }
+        });
+
+        negativeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+    }
+
+    private void deleteContact(Contact contact) {
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra("deletedContact", contact);
+        setResult(RESULT_OK, resultIntent);
+        finish(); // 현재 액티비티 종료
     }
 
     private void generateAndShowQRCode(Contact contact) {

@@ -13,13 +13,29 @@
         android:background="@null"
         android:layout_margin="16dp" />
 
-    <TextView
-        android:id="@+id/profileText"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="28sp"
-        android:padding="6dp"
-        android:fontFamily="@font/pretendard_extrabold" />
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/profileText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="28sp"
+            android:padding="6dp"
+            android:fontFamily="@font/pretendard_extrabold" />
+
+        <ImageButton
+            android:id="@+id/deleteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:src="@drawable/delete_24px"
+            android:background="@null"
+            android:padding="6dp" />
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/iconImageView"

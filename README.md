@@ -1,4 +1,5 @@
 ## MAD-CONNECT
+![connect](https://github.com/doongyeon/madcamp_week1/assets/161582130/301c9c54-69b3-4a25-b168-17551ed7f212)
 
 
 ## OUTLINE

@@ -1,0 +1,162 @@
+[
+  {
+    "title": "몰입캠프 개강",
+    "contents": "몰입캠프 개강",
+    "writer": "몰입캠프",
+    "location":  "-",
+    "date":  "2024-06-27",
+    "time": "-",
+    "type":  "public",
+    "isFavorite": false
+  },
+  {
+    "title": "1주차 분반 발표",
+    "contents":  "1주차 분반 발표",
+    "writer": "몰입캠프",
+    "location":  "실습실",
+    "date":  "2024-07-03",
+    "time": "-",
+    "type":  "public",
+    "isFavorite": false
+  },
+  {
+    "title": "1주차 전체 발표",
+    "contents":  "1주차 전체 발표",
+    "writer": "몰입캠프",
+    "location":  "강의실",
+    "date":  "2024-07-04",
+    "time": "-",
+    "type":  "public",
+    "isFavorite": false
+  },
+  {
+    "title": "이동욱 인프랩 CTO님 강연",
+    "contents":  "이동욱 인프랩 CTO님 강연",
+    "writer": "몰입캠프",
+    "location":  "강의실",
+    "date":  "2024-07-04",
+    "time": "-",
+    "type":  "public",
+    "isFavorite": false
+  },
+  {
+    "title": "보이저엑스 남세동 대표님 강연",
+    "contents":  "보이저엑스 남세동 대표님 강연",
+    "writer": "몰입캠프",
+    "location":  "강의실",
+    "date":  "2024-07-09",
+    "time": "-",
+    "type":  "public",
+    "isFavorite": false
+  },
+  {
+    "title": "2주차 분반 발표",
+    "contents":  "2주차 분반 발표",
+    "writer": "몰입캠프",
+    "location":  "실습실",
+    "date":  "2024-07-10",
+    "time": "-",
+    "type":  "public",
+    "isFavorite": false
+  },
+  {
+    "title": "2주차 전체 발표",
+    "contents":  "2주차 전체 발표",
+    "writer": "몰입캠프",
+    "location":  "강의실",
+    "date":  "2024-07-11",
+    "time": "-",
+    "type":  "public",
+    "isFavorite": false
+  },
+  {
+    "title": "김종민 구글 UI/UX 디자이너님 강연",
+    "contents":  "김종민 구글 UI/UX 디자이너님 강연",
+    "writer": "몰입캠프",
+    "location":  "강의실",
+    "date":  "2024-07-11",
+    "time": "-",
+    "type":  "public",
+    "isFavorite": false
+  },
+  {
+    "title": "3주차 분반 발표",
+    "contents":  "3주차 분반 발표",
+    "writer": "몰입캠프",
+    "location":  "실습실",
+    "date":  "2024-07-17",
+    "time": "-",
+    "type":  "public",
+    "isFavorite": false
+  },
+  {
+    "title": "3주차 전체 발표",
+    "contents":  "3주차 전체 발표",
+    "writer": "몰입캠프",
+    "location":  "강의실",
+    "date":  "2024-07-18",
+    "time": "-",
+    "type":  "public",
+    "isFavorite": false
+  },
+  {
+    "title": "강재윤 래브잇 대표님 강연",
+    "contents":  "강재윤 래브잇 대표님 강연",
+    "writer": "몰입캠프",
+    "location":  "강의실",
+    "date":  "2024-07-18",
+    "time": "-",
+    "type":  "public",
+    "isFavorite": false
+  },
+  {
+    "title": "장병규 의장님 면담",
+    "contents":  "장병규 의장님 면담",
+    "writer": "몰입캠프",
+    "location":  "강의실",
+    "date":  "2024-07-18",
+    "time": "-",
+    "type":  "public",
+    "isFavorite": false
+  },
+  {
+    "title": "4주차 분반 발표",
+    "contents":  "4주차 분반 발표",
+    "writer": "몰입캠프",
+    "location":  "실습실",
+    "date":  "2024-07-25",
+    "time": "-",
+    "type":  "public",
+    "isFavorite": false
+  },
+  {
+    "title": "4주차 전체 발표",
+    "contents":  "4주차 전체 발표",
+    "writer": "몰입캠프",
+    "location":  "강의실",
+    "date":  "2024-07-26",
+    "time": "-",
+    "type":  "public",
+    "isFavorite": false
+  },
+  {
+    "title": "권혁찬 빅뱅엔젤스 부대표님 강연",
+    "contents":  "권혁찬 빅뱅엔젤스 부대표님 강연",
+    "writer": "몰입캠프",
+    "location":  "강의실",
+    "date":  "2024-07-26",
+    "time": "-",
+    "type":  "public",
+    "isFavorite": false
+  },
+  {
+    "title": "몰입캠프 종강",
+    "contents":  "몰입캠프 종강",
+    "writer": "몰입캠프",
+    "location":  "강의실",
+    "date":  "2024-07-28",
+    "time": "-",
+    "type":  "public",
+    "isFavorite": false
+  }
+]

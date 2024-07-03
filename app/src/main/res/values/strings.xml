@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">My Application</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="back_button_description">뒤로 가기</string>
+    <string name="alarm_button_description">알람 설정</string>
 </resources>

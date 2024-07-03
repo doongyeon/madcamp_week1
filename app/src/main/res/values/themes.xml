@@ -3,6 +3,10 @@
     <style name="Base.Theme.MyApplication" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@color/grey</item>
+        <item name="android:statusBarColor">#45474B</item> <!-- 상태 바 색상 변경 -->
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="tabSelectedTextColor">@color/grey</item>
     </style>
 
     <style name="Theme.MyApplication" parent="Base.Theme.MyApplication" />

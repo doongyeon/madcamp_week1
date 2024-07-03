@@ -16,6 +16,7 @@ KAIST 전산학부 19학번 김동연 <a href="https://github.com/doongyeon" tar
 ## TECH STACK
 
 **Front-end** : Java
+
 **IDE** : Android Studio
 
 ## DETAILS

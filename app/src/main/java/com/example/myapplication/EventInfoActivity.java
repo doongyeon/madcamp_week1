@@ -1,52 +1,36 @@
 package com.example.myapplication;
 
-import static java.security.AccessController.getContext;
-
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.FileProvider;
 
 import com.example.myapplication.utils.StorageUtils;
-import com.github.chrisbanes.photoview.BuildConfig;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EventInfoActivity extends AddContactActivity {
+public class EventInfoActivity extends Activity {
     private List<Contact> contacts;
+    private AutoCompleteTextView nameInput;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,7 +52,6 @@ public class EventInfoActivity extends AddContactActivity {
             }
         });
 
-
         TextView titleTextView = findViewById(R.id.titleText);
         TextView contentTextView = findViewById(R.id.contentText);
         TextView timeTextView = findViewById(R.id.timeText);
@@ -88,13 +71,12 @@ public class EventInfoActivity extends AddContactActivity {
             content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
             writerTextView.setText(content);
 
-            String jsonContacts = StorageUtils.loadContacts(this); // this를 사용하여 Context 전달
+            String jsonContacts = StorageUtils.loadContacts(this);
             contacts = new Gson().fromJson(jsonContacts, new TypeToken<List<Contact>>() {}.getType());
 
             writerTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // 클릭 시 해당 이름을 가진 Contact를 찾아 ProfileActivity로 이동
                     Contact foundContact = findContactByName(event.getWriter());
                     if (foundContact != null) {
                         Intent intent = new Intent(EventInfoActivity.this, ProfileActivity.class);
@@ -114,14 +96,22 @@ public class EventInfoActivity extends AddContactActivity {
         }
     }
 
-
     private void showNameInputDialog() {
         LayoutInflater inflater = LayoutInflater.from(this);
         View dialogView = inflater.inflate(R.layout.dialog_input_name, null);
 
-        final EditText input = dialogView.findViewById(R.id.nameInput);
+        nameInput = dialogView.findViewById(R.id.nameInput);
         ImageButton positiveButton = dialogView.findViewById(R.id.positiveButton);
         ImageButton negativeButton = dialogView.findViewById(R.id.negativeButton);
+
+        List<String> contactNames = new ArrayList<>();
+        for (Contact contact : contacts) {
+            contactNames.add(contact.getName());
+        }
+
+        CustomArrayAdapter adapter = new CustomArrayAdapter(this, contactNames);
+        nameInput.setAdapter(adapter);
+        nameInput.setThreshold(1); // 한 글자만 입력해도 자동완성 제안이 나오도록 설정
 
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setView(dialogView)
@@ -130,7 +120,7 @@ public class EventInfoActivity extends AddContactActivity {
         positiveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String name = input.getText().toString();
+                String name = nameInput.getText().toString();
                 if (!name.isEmpty()) {
                     Contact contact = findContactByName(name);
                     if (contact != null) {
@@ -144,7 +134,6 @@ public class EventInfoActivity extends AddContactActivity {
                 dialog.dismiss();
             }
         });
-
 
         negativeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -161,20 +150,17 @@ public class EventInfoActivity extends AddContactActivity {
         if (event != null) {
             String eventDetails =
                     "*MADCAMP-CONNECT에서 온 초대장입니다!*" + "\n" + "\n" +
-                    "[" + event.getTitle() + "]" + "에 당신을 초대합니다" + "\n" +
-                    "시간: " + event.getTime() + "\n" +
-                    "장소: " + event.getLocation();
+                            "[" + event.getTitle() + "]" + "에 당신을 초대합니다" + "\n" +
+                            "시간: " + event.getTime() + "\n" +
+                            "장소: " + event.getLocation();
 
             Intent smsIntent = new Intent(Intent.ACTION_VIEW);
-            smsIntent.setData(Uri.parse("sms:" + phoneNumber));  // 메시지 앱을 호출하기 위한 URI
-            smsIntent.putExtra("sms_body", eventDetails);  // 메시지 내용
-
+            smsIntent.setData(Uri.parse("sms:" + phoneNumber));
+            smsIntent.putExtra("sms_body", eventDetails);
 
             startActivity(smsIntent);
-
         }
     }
-
 
     private void showDeleteConfirmationDialog(Event event) {
         LayoutInflater inflater = LayoutInflater.from(this);
@@ -209,25 +195,6 @@ public class EventInfoActivity extends AddContactActivity {
         dialog.show();
     }
 
-    // contacts.json 파일에서 Contact 리스트 읽어오기
-    private void loadContactsFromJson() {
-        try {
-            Resources resources = getResources();
-            InputStream inputStream = resources.openRawResource(R.raw.contacts);
-            Reader reader = new InputStreamReader(inputStream);
-
-            // Gson을 사용하여 JSON 데이터 파싱
-            Gson gson = new Gson();
-            contacts = gson.fromJson(reader, new TypeToken<List<Contact>>() {}.getType());
-
-            reader.close();
-            inputStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    // 이름을 기반으로 Contact를 찾는 메서드
     private Contact findContactByName(String name) {
         if (contacts == null) {
             return null;
@@ -239,7 +206,6 @@ public class EventInfoActivity extends AddContactActivity {
             }
         }
 
-        return null; // 해당하는 Contact를 찾지 못한 경우
+        return null;
     }
-
 }

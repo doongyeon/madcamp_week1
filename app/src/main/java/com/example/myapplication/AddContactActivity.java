@@ -68,9 +68,9 @@ public class AddContactActivity extends AppCompatActivity {
                 int selectedId = radioGroup.getCheckedRadioButtonId();
                 String role = "";
                 if (selectedId == R.id.radioAdmin) {
-                    role = "admin";
+                    role = "운영진";
                 } else if (selectedId == R.id.radioParticipant) {
-                    role = "participant";
+                    role = "참가자";
                 }
 
                 Contact newContact = new Contact(name, phone, email, group, role);

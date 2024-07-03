@@ -20,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/backButton"
-        android:text="연락처 추가하기"
+        android:text="연락처 추가하기 👋"
         android:textSize="28sp"
         android:padding="6dp"
         android:fontFamily="@font/pretendard_extrabold" />
@@ -40,7 +40,9 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/backButton"
             android:fontFamily="@font/pretendard_regular"
-            android:hint="이름" />
+            android:background="@drawable/edit_backgroud_ver2"
+            android:hint="이름"
+            android:padding="8dp" />
 
         <EditText
             android:id="@+id/phoneEditText"
@@ -49,7 +51,9 @@
             android:hint="전화번호(000-0000-0000)"
             android:layout_below="@id/nameEditText"
             android:fontFamily="@font/pretendard_regular"
-            android:layout_marginTop="8dp" />
+            android:background="@drawable/edit_backgroud_ver2"
+            android:layout_marginTop="12dp"
+            android:padding="8dp"/>
 
         <EditText
             android:id="@+id/emailEditText"
@@ -58,7 +62,9 @@
             android:hint="이메일"
             android:fontFamily="@font/pretendard_regular"
             android:layout_below="@id/phoneEditText"
-            android:layout_marginTop="8dp" />
+            android:background="@drawable/edit_backgroud_ver2"
+            android:layout_marginTop="12dp"
+            android:padding="8dp" />
 
         <EditText
             android:id="@+id/groupEditText"
@@ -67,7 +73,9 @@
             android:hint="분반"
             android:layout_below="@id/emailEditText"
             android:fontFamily="@font/pretendard_regular"
-            android:layout_marginTop="8dp" />
+            android:background="@drawable/edit_backgroud_ver2"
+            android:layout_marginTop="12dp"
+            android:padding="8dp" />
     </LinearLayout>
 
     <RadioGroup

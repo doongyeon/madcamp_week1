@@ -20,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/backButton"
-        android:text="이벤트 추가하기"
+        android:text="이벤트 추가하기 🎉"
         android:textSize="28sp"
         android:padding="6dp"
         android:fontFamily="@font/pretendard_extrabold" />
@@ -40,17 +40,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="작성자 이름"
+            android:padding="8dp"
+            android:background="@drawable/edit_backgroud_ver2"
             android:fontFamily="@font/pretendard_regular"
             android:layout_below="@id/addText"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="12dp" />
 
         <EditText
             android:id="@+id/titleEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:background="@drawable/edit_backgroud_ver2"
             android:layout_below="@id/writerEditText"
             android:fontFamily="@font/pretendard_regular"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="12dp"
             android:hint="제목" />
 
         <EditText
@@ -58,27 +62,33 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="내용"
+            android:padding="8dp"
+            android:background="@drawable/edit_backgroud_ver2"
             android:layout_below="@id/titleEditText"
             android:fontFamily="@font/pretendard_regular"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="12dp" />
 
         <EditText
             android:id="@+id/locationEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="만남 장소"
+            android:padding="8dp"
+            android:background="@drawable/edit_backgroud_ver2"
             android:layout_below="@id/contentsEditText"
             android:fontFamily="@font/pretendard_regular"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="12dp" />
 
         <EditText
             android:id="@+id/timeEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="만남 시간 (HH:MM)"
+            android:padding="8dp"
+            android:background="@drawable/edit_backgroud_ver2"
             android:layout_below="@id/locationEditText"
             android:fontFamily="@font/pretendard_regular"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="12dp" />
     </LinearLayout>
 
 

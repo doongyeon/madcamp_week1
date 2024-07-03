@@ -1,8 +1,11 @@
 package com.example.myapplication;
 
+import static java.security.AccessController.getContext;
+
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -28,6 +31,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.FileProvider;
 
+import com.example.myapplication.utils.StorageUtils;
 import com.github.chrisbanes.photoview.BuildConfig;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -84,7 +88,8 @@ public class EventInfoActivity extends AddContactActivity {
             content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
             writerTextView.setText(content);
 
-            loadContactsFromJson();
+            String jsonContacts = StorageUtils.loadContacts(this); // this를 사용하여 Context 전달
+            contacts = new Gson().fromJson(jsonContacts, new TypeToken<List<Contact>>() {}.getType());
 
             writerTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -108,6 +113,7 @@ public class EventInfoActivity extends AddContactActivity {
             });
         }
     }
+
 
     private void showNameInputDialog() {
         LayoutInflater inflater = LayoutInflater.from(this);

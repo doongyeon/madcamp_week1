@@ -52,7 +52,7 @@ public class ProfileActivity extends AppCompatActivity {
         contact = (Contact) getIntent().getSerializableExtra("contact");
 
         if (contact != null) {
-            profileTextView.setText(contact.getName() + "님의 프로필");
+            profileTextView.setText(contact.getName() + "님의 프로필 ⭐");
             nameTextView.setText(contact.getName());
             phoneTextView.setText(contact.getPhone());
             emailTextView.setText(contact.getEmail());

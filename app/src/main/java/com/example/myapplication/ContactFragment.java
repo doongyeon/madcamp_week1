@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Locale;
 
 public class ContactFragment extends Fragment {
-    private static final int REQUEST_PERMISSION_CODE = 100;
 
     private List<Contact> originalContacts;
     private List<Contact> contacts;

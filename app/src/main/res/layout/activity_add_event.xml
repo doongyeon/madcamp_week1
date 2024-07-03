@@ -50,6 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/writerEditText"
             android:fontFamily="@font/pretendard_regular"
+            android:layout_marginTop="8dp"
             android:hint="제목" />
 
         <EditText

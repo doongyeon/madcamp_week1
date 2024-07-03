@@ -158,15 +158,5 @@
     "time": "-",
     "type":  "public",
     "isFavorite": false
-  },
-  {
-    "title": "점심",
-    "contents":  "서브웨이 먹으러 갈 사람",
-    "writer": "김동연",
-    "location":  "113호",
-    "date":  "2024-06-30",
-    "time": "11:50",
-    "type":  "private",
-    "isFavorite": false
   }
 ]

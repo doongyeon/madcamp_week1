@@ -38,5 +38,6 @@
         <activity android:name=".EventInfoActivity" />
         <activity android:name=".AddEventActivity" />
         <activity android:name=".SelectImagesActivity" />
+
     </application>
 </manifest>

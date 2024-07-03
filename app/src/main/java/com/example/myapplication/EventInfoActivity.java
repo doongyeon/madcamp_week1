@@ -1,22 +1,40 @@
 package com.example.myapplication;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.FileProvider;
 
+import com.github.chrisbanes.photoview.BuildConfig;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -37,6 +55,15 @@ public class EventInfoActivity extends AddContactActivity {
                 finish();
             }
         });
+
+        ImageButton shareButton = findViewById(R.id.shareButton);
+        shareButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showNameInputDialog();
+            }
+        });
+
 
         TextView titleTextView = findViewById(R.id.titleText);
         TextView contentTextView = findViewById(R.id.contentText);
@@ -82,6 +109,67 @@ public class EventInfoActivity extends AddContactActivity {
         }
     }
 
+    private void showNameInputDialog() {
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View dialogView = inflater.inflate(R.layout.dialog_input_name, null);
+
+        final EditText input = dialogView.findViewById(R.id.nameInput);
+        ImageButton positiveButton = dialogView.findViewById(R.id.positiveButton);
+        ImageButton negativeButton = dialogView.findViewById(R.id.negativeButton);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        positiveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String name = input.getText().toString();
+                if (!name.isEmpty()) {
+                    Contact contact = findContactByName(name);
+                    if (contact != null) {
+                        shareEventInfo(contact.getPhone());
+                    } else {
+                        Toast.makeText(EventInfoActivity.this, "연락처를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(EventInfoActivity.this, "이름을 입력하세요.", Toast.LENGTH_SHORT).show();
+                }
+                dialog.dismiss();
+            }
+        });
+
+
+        negativeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+    }
+
+    private void shareEventInfo(String phoneNumber) {
+        Event event = (Event) getIntent().getSerializableExtra("event");
+        if (event != null) {
+            String eventDetails =
+                    "*MADCAMP-CONNECT에서 온 초대장입니다!*" + "\n" + "\n" +
+                    "[" + event.getTitle() + "]" + "에 당신을 초대합니다" + "\n" +
+                    "시간: " + event.getTime() + "\n" +
+                    "장소: " + event.getLocation();
+
+            Intent smsIntent = new Intent(Intent.ACTION_VIEW);
+            smsIntent.setData(Uri.parse("sms:" + phoneNumber));  // 메시지 앱을 호출하기 위한 URI
+            smsIntent.putExtra("sms_body", eventDetails);  // 메시지 내용
+
+
+            startActivity(smsIntent);
+
+        }
+    }
+
+
     private void showDeleteConfirmationDialog(Event event) {
         LayoutInflater inflater = LayoutInflater.from(this);
         View dialogView = inflater.inflate(R.layout.dialog_delete, null);
@@ -100,7 +188,7 @@ public class EventInfoActivity extends AddContactActivity {
             @Override
             public void onClick(View v) {
                 // 연락처 삭제 로직 추가
-                deleteEvent(event);
+//                deleteEvent(event);
                 dialog.dismiss();
             }
         });
@@ -146,16 +234,6 @@ public class EventInfoActivity extends AddContactActivity {
         }
 
         return null; // 해당하는 Contact를 찾지 못한 경우
-    }
-
-    private void deleteEvent(Event event) {
-        EventAdapter adapter = new EventAdapter(this, new ArrayList<>()); // 임시로 빈 어댑터 생성
-        adapter.deleteEvent(event);
-
-        Intent resultIntent = new Intent();
-        resultIntent.putExtra("deletedEvent", event);
-        setResult(Activity.RESULT_OK, resultIntent);
-        finish(); // 현재 액티비티 종료
     }
 
 }

@@ -1,16 +1,15 @@
 package com.example.myapplication;
 
 import android.Manifest;
-import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -21,13 +20,19 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class GalleryFragment extends Fragment {
 
+    private static final int REQUEST_CODE_SELECT_IMAGES = 1;
+    private static final String SHARED_PREFS_NAME = "gallery_prefs";
+    private static final String SELECTED_IMAGES_KEY = "selected_images";
     private RecyclerView recyclerView;
     private ImageAdapter imageAdapter;
     private List<String> imageList;
+    private Set<String> selectedImages;
     private boolean isThreeColumnLayout = true;
 
     @Nullable
@@ -37,59 +42,70 @@ public class GalleryFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        selectedImages = loadSelectedImages();
 
-        Button toggleLayoutButton = view.findViewById(R.id.toggle_layout_button);
+        ImageButton toggleLayoutButton = view.findViewById(R.id.toggle_layout_button);
         toggleLayoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toggleLayout();
+                if (isThreeColumnLayout) {
+                    recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 4));
+                    toggleLayoutButton.setImageResource(R.drawable.ic_3x3);
+                } else {
+                    recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
+                    toggleLayoutButton.setImageResource(R.drawable.ic_4x4);
+                }
+                isThreeColumnLayout = !isThreeColumnLayout;
+            }
+        });
+
+        ImageButton selectImagesButton = view.findViewById(R.id.select_images_button);
+        selectImagesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), SelectImagesActivity.class);
+                intent.putStringArrayListExtra("selected_images", new ArrayList<>(selectedImages));
+                startActivityForResult(intent, REQUEST_CODE_SELECT_IMAGES);
             }
         });
 
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_MEDIA_IMAGES)
                 == PackageManager.PERMISSION_GRANTED) {
-            imageList = getImagesPath();
-            imageAdapter = new ImageAdapter(imageList, isThreeColumnLayout);
+            imageList = new ArrayList<>(selectedImages);
+            imageAdapter = new ImageAdapter(imageList, selectedImages, isThreeColumnLayout, false);
             recyclerView.setAdapter(imageAdapter);
         } else {
             Toast.makeText(getContext(), "Storage permission is required to display images.", Toast.LENGTH_SHORT).show();
-            // 권한이 없으면 빈 화면을 보여주거나 안내 메시지를 표시할 수 있습니다.
         }
 
         return view;
     }
 
-    private void toggleLayout() {
-        if (isThreeColumnLayout) {
-            recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 4));
-        } else {
-            recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_SELECT_IMAGES && resultCode == getActivity().RESULT_OK && data != null) {
+            ArrayList<String> selectedImagePaths = data.getStringArrayListExtra("selected_images");
+            if (selectedImagePaths != null) {
+                selectedImages.clear();
+                selectedImages.addAll(selectedImagePaths);
+                saveSelectedImages(selectedImages); // 선택된 이미지 경로 저장
+                imageList.clear();
+                imageList.addAll(selectedImagePaths);
+                imageAdapter.notifyDataSetChanged();
+            }
         }
-        isThreeColumnLayout = !isThreeColumnLayout;
-        imageAdapter.setThreeColumnLayout(isThreeColumnLayout);
-        imageAdapter.notifyDataSetChanged();
     }
 
-    private List<String> getImagesPath() {
-        List<String> listOfAllImages = new ArrayList<>();
-        Uri uri;
-        Cursor cursor;
-        int column_index_data;
-        String PathOfImage;
-        uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+    private void saveSelectedImages(Set<String> selectedImages) {
+        SharedPreferences prefs = getContext().getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putStringSet(SELECTED_IMAGES_KEY, selectedImages);
+        editor.apply();
+    }
 
-        String[] projection = {MediaStore.MediaColumns.DATA, MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
-
-        cursor = getActivity().getContentResolver().query(uri, projection, null, null, null);
-
-        if (cursor != null) {
-            column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-            while (cursor.moveToNext()) {
-                PathOfImage = cursor.getString(column_index_data);
-                listOfAllImages.add(PathOfImage);
-            }
-            cursor.close();
-        }
-        return listOfAllImages;
+    private Set<String> loadSelectedImages() {
+        SharedPreferences prefs = getContext().getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+        return prefs.getStringSet(SELECTED_IMAGES_KEY, new HashSet<>());
     }
 }

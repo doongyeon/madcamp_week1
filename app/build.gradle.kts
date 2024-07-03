@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.myapplication"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -59,6 +59,11 @@ dependencies {
     annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
     implementation("com.github.chrisbanes:PhotoView:2.3.0")
     implementation("com.github.prolificinteractive:material-calendarview:2.0.1")
+    implementation("com.google.code.gson:gson:2.8.8")
+    implementation("com.jakewharton.threetenabp:threetenabp:1.3.1")
+    implementation("androidx.cardview:cardview:1.0.0")
+    implementation("com.google.zxing:core:3.4.1")
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 
     implementation(libs.appcompat)
     implementation(libs.material)

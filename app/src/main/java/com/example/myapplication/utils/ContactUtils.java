@@ -19,12 +19,31 @@ public class ContactUtils {
                 String phone = jsonObject.getString("phone");
                 String email = jsonObject.getString("email");
                 String group = jsonObject.getString("group");
-                contacts.add(new Contact(name, phone, email, group));
+                String role = jsonObject.getString("role");
+                contacts.add(new Contact(name, phone, email, group, role));
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return contacts;
+    }
+
+    public static String contactsToJson(List<Contact> contacts) {
+        JSONArray jsonArray = new JSONArray();
+        for (Contact contact : contacts) {
+            JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put("name", contact.getName());
+                jsonObject.put("phone", contact.getPhone());
+                jsonObject.put("email", contact.getEmail());
+                jsonObject.put("group", contact.getGroup());
+                jsonObject.put("role", contact.getRole());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            jsonArray.put(jsonObject);
+        }
+        return jsonArray.toString();
     }
 }
 

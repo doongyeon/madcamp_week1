@@ -1,6 +1,8 @@
 package com.example.myapplication;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.content.Intent;
 import android.text.TextUtils;
@@ -8,22 +10,30 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.AdapterView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import com.example.myapplication.utils.ContactUtils;
 import com.example.myapplication.utils.SoundSearcher;
+import com.example.myapplication.utils.StorageUtils;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -33,6 +43,7 @@ public class ContactFragment extends Fragment {
     private List<Contact> contacts;
     private ContactAdapter adapter;
     private ActivityResultLauncher<Intent> addContactLauncher;
+    private ActivityResultLauncher<Intent> profileLauncher;
 
     @Nullable
     @Override
@@ -42,10 +53,26 @@ public class ContactFragment extends Fragment {
         ListView listView = view.findViewById(R.id.listView);
         SearchView searchView = view.findViewById(R.id.searchView);
         ImageButton addButton = view.findViewById(R.id.addButton);
+        ImageButton filterButton = view.findViewById(R.id.filterButton);
 
-        String jsonContacts = loadJSONFromResource(R.raw.contacts);
+        /// JSON 데이터를 SharedPreferences로부터 불러오기
+        String jsonContacts = StorageUtils.loadContacts(getContext());
+        if (jsonContacts == null) {
+            jsonContacts = loadJSONFromResource(R.raw.contacts);
+            StorageUtils.saveContacts(getContext(), jsonContacts); // 처음 불러올 때 SharedPreferences에 저장
+        }
+
         originalContacts = ContactUtils.parseContacts(jsonContacts);
         contacts = new ArrayList<>(originalContacts);
+
+        // Sort contacts in alphabetical order
+        Collections.sort(contacts, new Comparator<Contact>() {
+            @Override
+            public int compare(Contact c1, Contact c2) {
+                return c1.getName().compareTo(c2.getName());
+            }
+        });
+
         adapter = new ContactAdapter(getContext(), contacts);
         listView.setAdapter(adapter);
 
@@ -55,7 +82,7 @@ public class ContactFragment extends Fragment {
                 Contact clickedContact = (Contact) parent.getItemAtPosition(position);
                 Intent intent = new Intent(getContext(), ProfileActivity.class);
                 intent.putExtra("contact", clickedContact);
-                startActivity(intent);
+                profileLauncher.launch(intent);
             }
         });
 
@@ -80,21 +107,123 @@ public class ContactFragment extends Fragment {
             }
         });
 
+        filterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showCustomDialog();
+            }
+        });
+
         addContactLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                    Intent data = result.getData();
-                    Contact newContact = (Contact) data.getSerializableExtra("newContact");
-                    if (newContact != null) {
-                        contacts.add(newContact);
-                        adapter.notifyDataSetChanged();
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                        Intent data = result.getData();
+                        Contact newContact = (Contact) data.getSerializableExtra("newContact");
+                        if (newContact != null) {
+                            contacts.add(newContact);
+                            originalContacts.add(newContact);
+                            // Sort the list after adding a new contact
+                            Collections.sort(contacts, new Comparator<Contact>() {
+                                @Override
+                                public int compare(Contact c1, Contact c2) {
+                                    return c1.getName().compareTo(c2.getName());
+                                }
+                            });
+                            adapter.notifyDataSetChanged();
+
+                            String json_contacts = ContactUtils.contactsToJson(originalContacts);
+                            StorageUtils.saveContacts(getContext(), json_contacts);
+                        }
                     }
                 }
-            }
+        );
+
+        profileLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                        Intent data = result.getData();
+                        Contact deletedContact = (Contact) data.getSerializableExtra("deletedContact");
+                        if (deletedContact != null) {
+                            deleteContact(deletedContact);
+                        }
+                    }
+                }
         );
 
         return view;
+    }
+
+
+    private void showCustomDialog() {
+        // Create the custom dialog
+        final Dialog dialog = new Dialog(getActivity());
+        dialog.setContentView(R.layout.custom_dialog);
+
+        // Set up the buttons
+        ImageButton buttonCancel = dialog.findViewById(R.id.button_cancel);
+        ImageButton buttonOk = dialog.findViewById(R.id.button_ok);
+
+        CheckBox checkBox1 = dialog.findViewById(R.id.checkBox1);
+        CheckBox checkBox2 = dialog.findViewById(R.id.checkBox2);
+        CheckBox checkBox3 = dialog.findViewById(R.id.checkBox3);
+        CheckBox checkBox4 = dialog.findViewById(R.id.checkBox4);
+        CheckBox checkBox5 = dialog.findViewById(R.id.checkBox5);
+        CheckBox checkBox6 = dialog.findViewById(R.id.checkBox6);
+
+        buttonCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss(); // Close the dialog
+            }
+        });
+
+        buttonOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Filter contacts based on selected checkboxes
+                List<Contact> filteredContacts = new ArrayList<>();
+                for (Contact contact : originalContacts) {
+                    boolean matchesFilter = false;
+                    if (checkBox1.isChecked()) {
+                        matchesFilter = true;
+                    }
+                    if (checkBox2.isChecked() && contact.getRole().equals("운영진")) {
+                        matchesFilter = true;
+                    }
+                    if (checkBox3.isChecked() && contact.getGroup().equals("1분반")) {
+                        matchesFilter = true;
+                    }
+                    if (checkBox4.isChecked() && contact.getGroup().equals("2분반")) {
+                        matchesFilter = true;
+                    }
+                    if (checkBox5.isChecked() && contact.getGroup().equals("3분반")) {
+                        matchesFilter = true;
+                    }
+                    if (checkBox6.isChecked() && contact.getGroup().equals("4분반")) {
+                        matchesFilter = true;
+                    }
+                    if (matchesFilter) {
+                        filteredContacts.add(contact);
+                    }
+                }
+                contacts.clear();
+                contacts.addAll(filteredContacts);
+                // Sort the filtered list
+                Collections.sort(contacts, new Comparator<Contact>() {
+                    @Override
+                    public int compare(Contact c1, Contact c2) {
+                        return c1.getName().compareTo(c2.getName());
+                    }
+                });
+                adapter.notifyDataSetChanged();
+
+                dialog.dismiss(); // Close the dialog
+            }
+        });
+
+        dialog.show();
     }
 
     private String loadJSONFromResource(int resourceId) {
@@ -130,6 +259,27 @@ public class ContactFragment extends Fragment {
                 }
             }
         }
+        // Sort the list after filtering
+        Collections.sort(contacts, new Comparator<Contact>() {
+            @Override
+            public int compare(Contact c1, Contact c2) {
+                return c1.getName().compareTo(c2.getName());
+            }
+        });
         adapter.notifyDataSetChanged();
+    }
+
+    public void deleteContact(Contact contact) {
+        String contactName = contact.getName();
+
+        // 이름이 같은 연락처 삭제
+        originalContacts.removeIf(c -> c.getName().equals(contactName));
+        contacts.removeIf(c -> c.getName().equals(contactName));
+
+        adapter.notifyDataSetChanged();
+
+        // SharedPreferences에 저장
+        String json_contacts = ContactUtils.contactsToJson(originalContacts);
+        StorageUtils.saveContacts(getContext(), json_contacts);
     }
 }

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <ImageButton
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:id="@+id/backButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/arrow_back_ios_24px"
+        android:background="@null"
+        android:layout_margin="16dp" />
+
+    <TextView
+        android:id="@+id/addText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/backButton"
+        android:text="이벤트 추가하기 🎉"
+        android:textSize="28sp"
+        android:padding="6dp"
+        android:fontFamily="@font/pretendard_extrabold" />
+
+    <LinearLayout
+        android:id="@+id/formLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/contact_box"
+        android:layout_below="@id/addText"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_marginTop="12dp">
+
+        <EditText
+            android:id="@+id/writerEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="작성자 이름"
+            android:padding="8dp"
+            android:background="@drawable/edit_backgroud_ver2"
+            android:fontFamily="@font/pretendard_regular"
+            android:layout_below="@id/addText"
+            android:layout_marginTop="12dp" />
+
+        <EditText
+            android:id="@+id/titleEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:background="@drawable/edit_backgroud_ver2"
+            android:layout_below="@id/writerEditText"
+            android:fontFamily="@font/pretendard_regular"
+            android:layout_marginTop="12dp"
+            android:hint="제목" />
+
+        <EditText
+            android:id="@+id/contentsEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="내용"
+            android:padding="8dp"
+            android:background="@drawable/edit_backgroud_ver2"
+            android:layout_below="@id/titleEditText"
+            android:fontFamily="@font/pretendard_regular"
+            android:layout_marginTop="12dp" />
+
+        <EditText
+            android:id="@+id/locationEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="만남 장소"
+            android:padding="8dp"
+            android:background="@drawable/edit_backgroud_ver2"
+            android:layout_below="@id/contentsEditText"
+            android:fontFamily="@font/pretendard_regular"
+            android:layout_marginTop="12dp" />
+
+        <EditText
+            android:id="@+id/timeEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="만남 시간 (HH:MM)"
+            android:padding="8dp"
+            android:background="@drawable/edit_backgroud_ver2"
+            android:layout_below="@id/locationEditText"
+            android:fontFamily="@font/pretendard_regular"
+            android:layout_marginTop="12dp" />
+    </LinearLayout>
+
+
+    <android.widget.Button
+        android:id="@+id/saveButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="저장"
+        android:fontFamily="@font/pretendard_semibold"
+        android:background="@drawable/add_contact_button"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:layout_below="@id/formLayout"
+        android:layout_marginTop="16dp"
+        android:layout_centerHorizontal="true" />
+</RelativeLayout>

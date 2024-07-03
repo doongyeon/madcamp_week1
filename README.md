@@ -7,9 +7,9 @@
 
 ## TEAM
 
-KAIST 전산학부 19학번 김동연
+KAIST 전산학부 19학번 김동연 <a href="https://github.com/doongyeon" target="_blank"><img src="https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white"></a>
 
-고려대학교 컴퓨터학과 22학번 안지형
+고려대학교 컴퓨터학과 22학번 안지형 <a href="https://github.com/gina0520" target="_blank"><img src="https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white"></a>
 
 ## TECH STACK
 

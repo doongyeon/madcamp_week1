@@ -49,7 +49,7 @@ KAIST 전산학부 19학번 김동연 <a href="https://github.com/doongyeon" tar
 - 연락처는 수기로 작성/QR코드 스캔 이렇게 두가지 방법을 통해 추가할 수 있습니다.
 - 연락처 삭제도 가능합니다.
 
-### TAB2: 공유 갤러리
+### TAB2: 갤러리
 <img src="https://github.com/doongyeon/madcamp_week1/assets/161582130/17e2ef59-fbb3-4422-89de-17ee4c46f55b" width="333"/>
 
 - 스마트폰에 저장된 이미지 중 원하는 이미지들로 갤러리를 구성할 수 있는 탭입니다.

@@ -43,6 +43,7 @@ public class GalleryFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
         selectedImages = loadSelectedImages();
+        imageList = new ArrayList<>(selectedImages);
 
         ImageButton toggleLayoutButton = view.findViewById(R.id.toggle_layout_button);
         toggleLayoutButton.setOnClickListener(new View.OnClickListener() {
@@ -71,7 +72,6 @@ public class GalleryFragment extends Fragment {
 
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_MEDIA_IMAGES)
                 == PackageManager.PERMISSION_GRANTED) {
-            imageList = new ArrayList<>(selectedImages);
             imageAdapter = new ImageAdapter(imageList, selectedImages, isThreeColumnLayout, false);
             recyclerView.setAdapter(imageAdapter);
         } else {
@@ -89,7 +89,7 @@ public class GalleryFragment extends Fragment {
             if (selectedImagePaths != null) {
                 selectedImages.clear();
                 selectedImages.addAll(selectedImagePaths);
-                saveSelectedImages(selectedImages); // 선택된 이미지 경로 저장
+                saveSelectedImages(selectedImages);
                 imageList.clear();
                 imageList.addAll(selectedImagePaths);
                 imageAdapter.notifyDataSetChanged();
@@ -106,6 +106,7 @@ public class GalleryFragment extends Fragment {
 
     private Set<String> loadSelectedImages() {
         SharedPreferences prefs = getContext().getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
-        return prefs.getStringSet(SELECTED_IMAGES_KEY, new HashSet<>());
+        Set<String> loadedImages = prefs.getStringSet(SELECTED_IMAGES_KEY, new HashSet<>());
+        return new HashSet<>(loadedImages); // 데이터를 복사하여 반환
     }
 }
